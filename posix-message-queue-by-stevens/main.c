@@ -1,4 +1,4 @@
-#include <mqueue/mqueue.h>
+#include <mqueue.h>
 
 #include <stdio.h>
 #include <stdlib.h>

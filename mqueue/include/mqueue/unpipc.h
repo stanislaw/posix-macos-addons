@@ -22,18 +22,18 @@
 #include	<stdint.h>  // uint32_t
 
 
-// ftok()
-#include	<sys/ipc.h>		/* System V IPC */
-
-#include	<sys/shm.h>		/* System V shared memory */
-
-#include 	<sys/msg.h> /* System V message queues */
-
-# include	<mqueue.h>		/* Posix message queues */
-
-#include	<semaphore.h>	/* Posix semaphores */
-
-# include	<sys/mman.h>	/* Posix shared memory */
+//// ftok()
+//#include	<sys/ipc.h>		/* System V IPC */
+//
+//#include	<sys/shm.h>		/* System V shared memory */
+//
+//#include 	<sys/msg.h> /* System V message queues */
+//
+//#include	<mqueue.h>		/* Posix message queues */
+//
+//#include	<semaphore.h>	/* Posix semaphores */
+//
+//#include <sys/mman.h>	/* Posix shared memory */
 
 
 //vonzhou: error: storage size of ‘buf’ isn’t known (struct msgbuf )
@@ -328,26 +328,26 @@ pid_t	 Wait(int *);
 pid_t	 Waitpid(pid_t, int *, int);
 void	 Write(int, void *, size_t);
 
-/* Posix message queues */
-mqd_t	 Mq_open(const char *, int, ...);
-void	 Mq_close(mqd_t);
-void	 Mq_unlink(const char *pathname);
-void	 Mq_send(mqd_t, const char *, size_t, unsigned int);
-ssize_t	 Mq_receive(mqd_t, char *, size_t, unsigned int *);
-void	 Mq_notify(mqd_t, const struct sigevent *);
-void	 Mq_getattr(mqd_t, struct mq_attr *);
-void	 Mq_setattr(mqd_t, const struct mq_attr *, struct mq_attr *);
+///* Posix message queues */
+//mqd_t	 Mq_open(const char *, int, ...);
+//void	 Mq_close(mqd_t);
+//void	 Mq_unlink(const char *pathname);
+//void	 Mq_send(mqd_t, const char *, size_t, unsigned int);
+//ssize_t	 Mq_receive(mqd_t, char *, size_t, unsigned int *);
+//void	 Mq_notify(mqd_t, const struct sigevent *);
+//void	 Mq_getattr(mqd_t, struct mq_attr *);
+//void	 Mq_setattr(mqd_t, const struct mq_attr *, struct mq_attr *);
 
-/* Posix semaphores */
-sem_t	*Sem_open(const char *, int, ...);
-void	 Sem_close(sem_t *);
-void	 Sem_unlink(const char *);
-void	 Sem_init(sem_t *, int, unsigned int);
-void	 Sem_destroy(sem_t *);
-void	 Sem_wait(sem_t *);
-int		 Sem_trywait(sem_t *);
-void	 Sem_post(sem_t *);
-void	 Sem_getvalue(sem_t *, int *);
+///* Posix semaphores */
+//sem_t	*Sem_open(const char *, int, ...);
+//void	 Sem_close(sem_t *);
+//void	 Sem_unlink(const char *);
+//void	 Sem_init(sem_t *, int, unsigned int);
+//void	 Sem_destroy(sem_t *);
+//void	 Sem_wait(sem_t *);
+//int		 Sem_trywait(sem_t *);
+//void	 Sem_post(sem_t *);
+//void	 Sem_getvalue(sem_t *, int *);
 
 /* Note that <sys/mman.h> is defined on some systems that do not support
  * Posix shared memory (e.g., 4.4BSD), because this header predates Posix
