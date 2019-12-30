@@ -1,2 +1,4 @@
+cmake_minimum_required(VERSION 3.13)
 
-add_subdirectory(system-v-message-queue-example)
+add_subdirectory(mqueue)
+add_subdirectory(posix-message-queue-by-stevens)
