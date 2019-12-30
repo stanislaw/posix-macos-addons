@@ -22,6 +22,10 @@
 #include	<stdint.h>  // uint32_t
 
 
+#ifdef __cplusplus
+extern "C"{
+#endif
+  
 //// ftok()
 //#include	<sys/ipc.h>		/* System V IPC */
 //
@@ -180,12 +184,15 @@ typedef	void	Sigfunc_rt(int, siginfo_t *, void *);
  * problem too ...
  */
 
-#ifdef	__bsdi__
+// TODO: Check this
 #define	va_mode_t	int
-#else
-#define	va_mode_t	mode_t
-#endif
+//#ifdef	__bsdi__
+//#define	va_mode_t	int
+//#else
+//#define	va_mode_t	mode_t
+//#endif
 /* $$.ix [va_mode_t]~datatype,~definition~of$$ */
+
 
 /* our record locking macros */
 #define	read_lock(fd, offset, whence, len) \
@@ -285,7 +292,6 @@ void	*Calloc(size_t, size_t);
 void	 Close(int);
 void	 Dup2(int, int);
 int		 Fcntl(int, int, void *);
-pid_t	 Fork(void);
 long	 Fpathconf(int, int);
 void	 Fstat(int, struct stat *);
 key_t	 Ftok(const char *, int);
@@ -325,7 +331,6 @@ void	 Sysctl(int *, u_int, void *, size_t *, void *, size_t);
 void	 Unlink(const char *);
 void	*Valloc(size_t);
 pid_t	 Wait(int *);
-pid_t	 Waitpid(pid_t, int *, int);
 void	 Write(int, void *, size_t);
 
 ///* Posix message queues */
@@ -362,11 +367,11 @@ int		 Shm_open(const char *, int, mode_t);
 void	 Shm_unlink(const char *);
 #endif
 
-/* System V message queues API*/
-int		 Msgget(key_t key, int flag);
-void	 Msgctl(int, int, struct msqid_ds *);
-void	 Msgsnd(int, const void *, size_t, int);
-ssize_t	 Msgrcv(int, void *, size_t, int, int);
+///* System V message queues API*/
+//int		 Msgget(key_t key, int flag);
+//void	 Msgctl(int, int, struct msqid_ds *);
+//void	 Msgsnd(int, const void *, size_t, int);
+//ssize_t	 Msgrcv(int, void *, size_t, int, int);
 
 #ifdef	HAVE_SYS_SEM_H
 /* 4System V semaphores */
@@ -375,20 +380,20 @@ int		 Semctl(int, int, int, ...);
 void	 Semop(int, struct sembuf *, size_t);
 #endif	/* HAVE_SYS_SEM_H */
 
-/* System V shared memory */
-int		 Shmget(key_t, size_t, int);
-void	*Shmat(int, const void *, int);
-void	 Shmdt(const void *);
-void	 Shmctl(int, int, struct shmid_ds *);
+///* System V shared memory */
+//int		 Shmget(key_t, size_t, int);
+//void	*Shmat(int, const void *, int);
+//void	 Shmdt(const void *);
+//void	 Shmctl(int, int, struct shmid_ds *);
 
-/* prototypes for our stdio wrapper functions */
-void	 Fclose(FILE *);
-FILE	*Fdopen(int, const char *);
-char	*Fgets(char *, int, FILE *);
-FILE	*Fopen(const char *, const char *);
-void	 Fputs(const char *, FILE *);
-FILE	*Popen(const char *, const char *);
-int		 Pclose(FILE *);
+///* prototypes for our stdio wrapper functions */
+//void	 Fclose(FILE *);
+//FILE	*Fdopen(int, const char *);
+//char	*Fgets(char *, int, FILE *);
+//FILE	*Fopen(const char *, const char *);
+//void	 Fputs(const char *, FILE *);
+//FILE	*Popen(const char *, const char *);
+//int		 Pclose(FILE *);
 
 #ifdef	HAVE_FATTACH
 void	 Fattach(int, const char *);
@@ -462,3 +467,6 @@ void	 Clnt_control(CLIENT *, u_int, char *);
 
 #endif /* __unpipc_h */
 
+#ifdef __cplusplus
+}
+#endif

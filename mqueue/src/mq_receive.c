@@ -3,16 +3,16 @@
 #include	"mqueue.h"
 
 ssize_t
-mymq_receive(mymqd_t mqd, char *ptr, size_t maxlen, unsigned int *priop)
+mq_receive(mqd_t mqd, char *ptr, size_t maxlen, unsigned int *priop)
 {
 	int		n;
 	long	index;
 	int8_t	*mptr;
 	ssize_t	len;
-	struct mymq_hdr	*mqhdr;
-	struct mymq_attr	*attr;
+	struct mq_hdr	*mqhdr;
+	struct mq_attr	*attr;
 	struct mymsg_hdr	*msghdr;
-	struct mymq_info	*mqinfo;
+	struct mq_info	*mqinfo;
 
 	mqinfo = mqd;
 	if (mqinfo->mqi_magic != MQI_MAGIC) {
@@ -46,7 +46,7 @@ mymq_receive(mymqd_t mqd, char *ptr, size_t maxlen, unsigned int *priop)
 /* include mq_receive2 */
 
 	if ( (index = mqhdr->mqh_head) == 0)
-		err_dump("mymq_receive: curmsgs = %ld; head = 0", attr->mq_curmsgs);
+		err_dump("mq_receive: curmsgs = %ld; head = 0", attr->mq_curmsgs);
 
 	msghdr = (struct mymsg_hdr *) &mptr[index];
 	mqhdr->mqh_head = msghdr->msg_next;	/* new head of list */
@@ -74,11 +74,11 @@ err:
 /* end mq_receive2 */
 
 ssize_t
-Mymq_receive(mymqd_t mqd, char *ptr, size_t len, unsigned int *priop)
+Mymq_receive(mqd_t mqd, char *ptr, size_t len, unsigned int *priop)
 {
 	ssize_t	n;
 
-	if ( (n = mymq_receive(mqd, ptr, len, priop)) == -1)
-		err_sys("mymq_receive error");
+	if ( (n = mq_receive(mqd, ptr, len, priop)) == -1)
+		err_sys("mq_receive error");
 	return(n);
 }

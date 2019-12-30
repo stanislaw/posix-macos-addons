@@ -3,12 +3,12 @@
 #include	"mqueue.h"
 
 int
-mymq_getattr(mymqd_t mqd, struct mymq_attr *mqstat)
+mq_getattr(mqd_t mqd, struct mq_attr *mqstat)
 {
 	int		n;
-	struct mymq_hdr	*mqhdr;
-	struct mymq_attr	*attr;
-	struct mymq_info	*mqinfo;
+	struct mq_hdr	*mqhdr;
+	struct mq_attr	*attr;
+	struct mq_info	*mqinfo;
 
 	mqinfo = mqd;
 	if (mqinfo->mqi_magic != MQI_MAGIC) {
@@ -33,8 +33,8 @@ mymq_getattr(mymqd_t mqd, struct mymq_attr *mqstat)
 /* end mq_getattr */
 
 void
-Mymq_getattr(mymqd_t mqd, struct mymq_attr *mqstat)
+Mymq_getattr(mqd_t mqd, struct mq_attr *mqstat)
 {
-	if (mymq_getattr(mqd, mqstat) == -1)
-		err_sys("mymq_getattr error");
+	if (mq_getattr(mqd, mqstat) == -1)
+		err_sys("mq_getattr error");
 }

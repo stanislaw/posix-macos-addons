@@ -1,2 +1,15 @@
-add_library(mqueue src/mq_open.c)
+set(SOURCES
+  src/mq_close.c
+  src/mq_getattr.c
+  src/mq_notify.c
+  src/mq_open.c
+  src/mq_receive.c
+  src/mq_send.c
+  src/mq_setattr.c
+  src/mq_unlink.c
+  src/error.c
+)
+
+add_library(mqueue ${SOURCES})
 target_include_directories(mqueue PUBLIC include include/mqueue)
+target_link_libraries(mqueue compatibility)

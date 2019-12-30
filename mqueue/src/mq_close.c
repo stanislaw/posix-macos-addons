@@ -1,41 +1,39 @@
-/* include mq_close */
-#include	"unpipc.h"
-#include	"mqueue.h"
+#include "mqueue.h"
 
-int
-mymq_close(mymqd_t mqd)
-{
-	long	msgsize, filesize;
-	struct mymq_hdr	*mqhdr;
-	struct mymq_attr	*attr;
-	struct mymq_info	*mqinfo;
+#include "unpipc.h"
 
-	mqinfo = mqd;
-	if (mqinfo->mqi_magic != MQI_MAGIC) {
-		errno = EBADF;
-		return(-1);
-	}
-	mqhdr = mqinfo->mqi_hdr;
-	attr = &mqhdr->mqh_attr;
+#include <sys/mman.h>
 
-	if (mymq_notify(mqd, NULL) != 0)	/* unregister calling process */
-		return(-1);
+int mq_close(mqd_t mqd) {
+  long msgsize, filesize;
+  struct mq_hdr *mqhdr;
+  struct mq_attr *attr;
+  struct mq_info *mqinfo;
 
-	msgsize = MSGSIZE(attr->mq_msgsize);
-	filesize = sizeof(struct mymq_hdr) + (attr->mq_maxmsg *
-			   (sizeof(struct mymsg_hdr) + msgsize));
-	if (munmap(mqinfo->mqi_hdr, filesize) == -1)
-		return(-1);
+  mqinfo = mqd;
+  if (mqinfo->mqi_magic != MQI_MAGIC) {
+    errno = EBADF;
+    return (-1);
+  }
+  mqhdr = mqinfo->mqi_hdr;
+  attr = &mqhdr->mqh_attr;
 
-	mqinfo->mqi_magic = 0;		/* just in case */
-	free(mqinfo);
-	return(0);
+  if (mq_notify(mqd, NULL) != 0) /* unregister calling process */
+    return (-1);
+
+  msgsize = MSGSIZE(attr->mq_msgsize);
+  filesize = sizeof(struct mq_hdr) +
+    (attr->mq_maxmsg * (sizeof(struct mymsg_hdr) + msgsize));
+  if (munmap(mqinfo->mqi_hdr, filesize) == -1)
+    return (-1);
+
+  mqinfo->mqi_magic = 0; /* just in case */
+  free(mqinfo);
+  return (0);
 }
 /* end mq_close */
 
-void
-Mymq_close(mymqd_t mqd)
-{
-	if (mymq_close(mqd) == -1)
-		err_sys("mymq_close error");
+void Mymq_close(mqd_t mqd) {
+  if (mq_close(mqd) == -1)
+    err_sys("mq_close error");
 }

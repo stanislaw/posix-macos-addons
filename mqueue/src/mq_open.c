@@ -7,10 +7,10 @@
 
 #define		MAX_TRIES	10	/* for waiting for initialization */
 
-struct mymq_attr	defattr = { 0, 128, 1024, 0 };
+struct mq_attr defattr = { 0, 128, 1024, 0 };
 
-mymqd_t
-mymq_open(const char *pathname, int oflag, ...)
+mqd_t
+mq_open(const char *pathname, int oflag, ...)
 {
 	int		i, fd, nonblock, created, save_errno;
 	long	msgsize, filesize, index;
@@ -18,10 +18,10 @@ mymq_open(const char *pathname, int oflag, ...)
 	mode_t	mode;
 	int8_t	*mptr;
 	struct stat	statbuff;
-	struct mymq_hdr	*mqhdr;
+	struct mq_hdr	*mqhdr;
 	struct mymsg_hdr	*msghdr;
-	struct mymq_attr	*attr;
-	struct mymq_info	*mqinfo;
+	struct mq_attr	*attr;
+	struct mq_info	*mqinfo;
 	pthread_mutexattr_t	mattr;
 	pthread_condattr_t	cattr;
 
@@ -34,7 +34,7 @@ again:
 	if (oflag & O_CREAT) {
 		va_start(ap, oflag);		/* init ap to final named argument */
 		mode = va_arg(ap, va_mode_t) & ~S_IXUSR;
-		attr = va_arg(ap, struct mymq_attr *);
+		attr = va_arg(ap, struct mq_attr *);
 		va_end(ap);
 
 			/* 4open and specify O_EXCL and user-execute */
@@ -43,7 +43,7 @@ again:
 			if (errno == EEXIST && (oflag & O_EXCL) == 0)
 				goto exists;		/* already exists, OK */
 			else
-				return((mymqd_t) -1);
+				return((mqd_t) -1);
 		}
 		created = 1;
 			/* 4first one to create the file initializes it */
@@ -59,7 +59,7 @@ again:
 /* include mq_open2 */
 			/* 4calculate and set the file size */
 		msgsize = MSGSIZE(attr->mq_msgsize);
-		filesize = sizeof(struct mymq_hdr) + (attr->mq_maxmsg *
+		filesize = sizeof(struct mq_hdr) + (attr->mq_maxmsg *
 				   (sizeof(struct mymsg_hdr) + msgsize));
 		if (lseek(fd, filesize - 1, SEEK_SET) == -1)
 			goto err;
@@ -72,12 +72,12 @@ again:
 		if (mptr == MAP_FAILED)
 			goto err;
 
-			/* 4allocate one mymq_info{} for the queue */
+			/* 4allocate one mq_info{} for the queue */
 /* *INDENT-OFF* */
-		if ( (mqinfo = malloc(sizeof(struct mymq_info))) == NULL)
+		if ( (mqinfo = malloc(sizeof(struct mq_info))) == NULL)
 			goto err;
 /* *INDENT-ON* */
-		mqinfo->mqi_hdr = mqhdr = (struct mymq_hdr *) mptr;
+		mqinfo->mqi_hdr = mqhdr = (struct mq_hdr *) mptr;
 		mqinfo->mqi_magic = MQI_MAGIC;
 		mqinfo->mqi_flags = nonblock;
 
@@ -90,7 +90,7 @@ again:
 		mqhdr->mqh_nwait = 0;
 		mqhdr->mqh_pid = 0;
 		mqhdr->mqh_head = 0;
-		index = sizeof(struct mymq_hdr);
+		index = sizeof(struct mq_hdr);
 		mqhdr->mqh_free = index;
 		for (i = 0; i < attr->mq_maxmsg - 1; i++) {
 			msghdr = (struct mymsg_hdr *) &mptr[index];
@@ -121,7 +121,7 @@ again:
 		if (fchmod(fd, mode) == -1)
 			goto err;
 		close(fd);
-		return((mymqd_t) mqinfo);
+		return((mqd_t) mqinfo);
 	}
 /* end mq_open2 */
 /* include mq_open3 */
@@ -157,15 +157,15 @@ exists:
 		goto err;
 	close(fd);
 
-		/* 4allocate one mymq_info{} for each open */
+		/* 4allocate one mq_info{} for each open */
 /* *INDENT-OFF* */
-	if ( (mqinfo = malloc(sizeof(struct mymq_info))) == NULL)
+	if ( (mqinfo = malloc(sizeof(struct mq_info))) == NULL)
 		goto err;
 /* *INDENT-ON* */
-	mqinfo->mqi_hdr = (struct mymq_hdr *) mptr;
+	mqinfo->mqi_hdr = (struct mq_hdr *) mptr;
 	mqinfo->mqi_magic = MQI_MAGIC;
 	mqinfo->mqi_flags = nonblock;
-	return((mymqd_t) mqinfo);
+	return((mqd_t) mqinfo);
 /* $$.bp$$ */
 pthreaderr:
 	errno = i;
@@ -180,28 +180,28 @@ err:
 		free(mqinfo);
 	close(fd);
 	errno = save_errno;
-	return((mymqd_t) -1);
+	return((mqd_t) -1);
 }
 /* end mq_open3 */
 
-mymqd_t
+mqd_t
 Mymq_open(const char *pathname, int oflag, ...)
 {
-	mymqd_t	mqd;
+	mqd_t	mqd;
 	va_list	ap;
 	mode_t	mode;
-	struct mymq_attr	*attr;
+	struct mq_attr	*attr;
 
 	if (oflag & O_CREAT) {
 		va_start(ap, oflag);		/* init ap to final named argument */
 		mode = va_arg(ap, va_mode_t);
-		attr = va_arg(ap, struct mymq_attr *);
-		if ( (mqd = mymq_open(pathname, oflag, mode, attr)) == (mymqd_t) -1)
-			err_sys("mymq_open error for %s", pathname);
+		attr = va_arg(ap, struct mq_attr *);
+		if ( (mqd = mq_open(pathname, oflag, mode, attr)) == (mqd_t) -1)
+			err_sys("mq_open error for %s", pathname);
 		va_end(ap);
 	} else {
-		if ( (mqd = mymq_open(pathname, oflag)) == (mymqd_t) -1)
-			err_sys("mymq_open error for %s", pathname);
+		if ( (mqd = mq_open(pathname, oflag)) == (mqd_t) -1)
+			err_sys("mq_open error for %s", pathname);
 	}
 	return(mqd);
 }
