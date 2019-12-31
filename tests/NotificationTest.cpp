@@ -34,7 +34,7 @@ static const char message_queue_name[] = "test_mqueue";
 
 static const int CUSTOM_SUCCESS_EXIT_CODE = 47;
 
-class Queue2Test : public ::testing::Test {
+class NotificationTest : public ::testing::Test {
 protected:
   void SetUp() override {
     assert(mq_unlink(message_queue_name) == 0 || errno == ENOENT);
@@ -43,11 +43,6 @@ protected:
   void TearDown() override {
     assert(mq_unlink(message_queue_name) == 0 || errno == ENOENT);
   }
-
-  int rc;
-  mqd_t mqd;
-  unsigned int prio;
-  struct sigevent sigev;
 };
 
 static int sigusr1 = 0;
@@ -56,7 +51,11 @@ static void sig_usr1(int signo) {
   return;
 }
 
-TEST_F(Queue2Test, 01_registrationOnlyPossibleOnce) {
+TEST_F(NotificationTest, 01_registrationOnlyPossibleOnce) {
+  int rc;
+  mqd_t mqd;
+  struct sigevent sigev;
+
   mqd =
     Mymq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, NULL);
 
@@ -78,8 +77,11 @@ TEST_F(Queue2Test, 01_registrationOnlyPossibleOnce) {
   ASSERT_EQ(errno, EBUSY);
 }
 
-TEST_F(Queue2Test, 02_registrationOnlyPossibleOnce_childCannotRegister) {
+TEST_F(NotificationTest, 02_registrationOnlyPossibleOnce_childCannotRegister) {
   /// Make certain child cannot register if we are registered.
+  mqd_t mqd;
+  struct sigevent sigev;
+
   mqd =
     Mymq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, NULL);
 
@@ -94,7 +96,7 @@ TEST_F(Queue2Test, 02_registrationOnlyPossibleOnce_childCannotRegister) {
   }
 
   if (childpid == 0) {
-    if ((rc = mq_notify(mqd, &sigev)) == 0 || errno != EBUSY) {
+    if ((mq_notify(mqd, &sigev)) == 0 || errno != EBUSY) {
       exit(1);
     }
     exit(0);
@@ -110,8 +112,13 @@ TEST_F(Queue2Test, 02_registrationOnlyPossibleOnce_childCannotRegister) {
   ASSERT_EQ(WEXITSTATUS(exit_status_raw), 0);
 }
 
-TEST_F(Queue2Test, 03_sendAMessageResultsInSIGUSR1_butOnlyOnce) {
+TEST_F(NotificationTest, 03_sendAMessageResultsInSIGUSR1_butOnlyOnce) {
   /// send a message and verify SIGUSR1 is delivered
+  int rc;
+  mqd_t mqd;
+  unsigned int prio;
+  struct sigevent sigev;
+
   struct mq_attr attr;
   attr.mq_maxmsg = 5;
   attr.mq_msgsize = 7;
@@ -147,9 +154,13 @@ TEST_F(Queue2Test, 03_sendAMessageResultsInSIGUSR1_butOnlyOnce) {
   Signal(SIGUSR1, NULL);
 }
 
-TEST_F(Queue2Test, 04_USR1_is_not_delivered_if_blocked_by_receive) {
+TEST_F(NotificationTest, 04_USR1_is_not_delivered_if_blocked_by_receive) {
   /// send a message and verify SIGUSR1 is not delivered if a child process
   /// is blocking by mq_receive()
+  mqd_t mqd;
+  unsigned int prio;
+  struct sigevent sigev;
+
   struct mq_attr attr;
   attr.mq_maxmsg = 5;
   attr.mq_msgsize = 7;
@@ -170,6 +181,7 @@ TEST_F(Queue2Test, 04_USR1_is_not_delivered_if_blocked_by_receive) {
     assert(0);
   }
   if (childpid == 0) {
+    int rc;
     /// Child calls mq_receive, which prevents notification.
     if ((rc = Mymq_receive(mqd, msg, attr.mq_msgsize, &prio)) != 6)
       err_quit("mq_receive returned %d, expected 6", rc);

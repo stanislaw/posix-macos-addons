@@ -2,8 +2,8 @@ add_subdirectory(googletest)
 
 set(tests-unit-sources
   BasicTest.cpp
-  SIGUSR1_Test.cpp
-  IPC_Test.cpp
+  NotificationTest.cpp
+  IPCTest.cpp
 )
 
 add_executable(tests-unit ${tests-unit-sources})
