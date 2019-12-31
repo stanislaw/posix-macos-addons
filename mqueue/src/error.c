@@ -78,7 +78,7 @@ err_msg(const char *fmt, ...)
 void
 err_quit(const char *fmt, ...)
 {
-  assert(0);
+    assert(0 && "Should not reach here");
 
 	va_list		ap;
 
