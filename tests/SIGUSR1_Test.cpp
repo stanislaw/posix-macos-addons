@@ -32,6 +32,8 @@ static Sigfunc *Signal(int signo, Sigfunc *func) /* for our signal() function */
 
 static const char message_queue_name[] = "test_mqueue";
 
+static const int CUSTOM_SUCCESS_EXIT_CODE = 47;
+
 class Queue2Test : public ::testing::Test {
 protected:
   void SetUp() override {
@@ -141,6 +143,53 @@ TEST_F(Queue2Test, 03_sendAMessageResultsInSIGUSR1_butOnlyOnce) {
   rc = Mymq_receive(mqd, msg, attr.mq_msgsize, &prio);
   ASSERT_EQ(rc, 2);
   ASSERT_EQ(prio, 2);
+
+  Signal(SIGUSR1, NULL);
+}
+
+TEST_F(Queue2Test, 04_USR1_is_not_delivered_if_blocked_by_receive) {
+  /// send a message and verify SIGUSR1 is not delivered if a child process
+  /// is blocking by mq_receive()
+  struct mq_attr attr;
+  attr.mq_maxmsg = 5;
+  attr.mq_msgsize = 7;
+
+  mqd =
+    Mymq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+
+  sigev.sigev_notify = SIGEV_SIGNAL;
+  sigev.sigev_signo = SIGUSR1;
+  Signal(SIGUSR1, sig_usr1);
+  Mymq_notify(mqd, &sigev);
+
+  sigusr1 = 0;
+
+  pid_t childpid = fork();
+  if (childpid == -1) {
+    printf("fork error\n");
+    assert(0);
+  }
+  if (childpid == 0) {
+    /// Child calls mq_receive, which prevents notification.
+    if ((rc = Mymq_receive(mqd, msg, attr.mq_msgsize, &prio)) != 6)
+      err_quit("mq_receive returned %d, expected 6", rc);
+    if (prio != 6)
+      err_quit("mq_receive returned prio %d, expected 6", prio);
+    exit(CUSTOM_SUCCESS_EXIT_CODE);
+  }
+
+  sleep(2); /* let child block in mq_receive() */
+  Mymq_send(mqd, msg6, 6, 6);
+
+  int exit_status_raw;
+  while (waitpid(childpid, &exit_status_raw, 0) == -1) {
+    if (errno == EINTR) {
+      printf("EINTR\n");
+    }
+  }
+  ASSERT_EQ(WEXITSTATUS(exit_status_raw), CUSTOM_SUCCESS_EXIT_CODE);
+
+  ASSERT_EQ(sigusr1, 0);
 
   Signal(SIGUSR1, NULL);
 }
