@@ -78,6 +78,8 @@ err_msg(const char *fmt, ...)
 void
 err_quit(const char *fmt, ...)
 {
+  assert(0);
+
 	va_list		ap;
 
 	va_start(ap, fmt);

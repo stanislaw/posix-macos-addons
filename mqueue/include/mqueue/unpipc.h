@@ -272,7 +272,7 @@ int		 Readable_timeo(int, int);
 ssize_t	 Readline(int, void *, size_t);
 ssize_t	 Readn(int, void *, size_t);
 void	 Set_concurrency(int);
-Sigfunc *Signal(int, Sigfunc *);
+
 Sigfunc *Signal_intr(int, Sigfunc *);
 
 #ifdef	HAVE_SIGINFO_T_STRUCT

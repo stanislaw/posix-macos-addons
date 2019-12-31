@@ -48,9 +48,11 @@ int main(int argc, char **argv) {
     err_sys("mq_unlink returned %d", rc);
   }
 
-  attr.mq_maxmsg = 4;
+  attr.mq_maxmsg = 24;
   attr.mq_msgsize = 7;
   mqd = Mymq_open(argv[1], O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+
+  mq_getattr(mqd, &info);
 
 #ifdef notdef
   /* queue is empty; check that mymq_receive is interruptable */
@@ -118,25 +120,43 @@ int main(int argc, char **argv) {
       printf("mq_notify returned %d, expected EBUSY\n", rc);
     }
     printf("last line of a child\n");
-    exit(0);
+    exit(10);
   }
 
-  if (waitpid(childpid, NULL, 0) == -1) {
-    perror("perror");
-    printf("waitpid error\n");
-    assert(0);
+  int exit_status_raw;
+  pid_t pid;
+  while ((pid = waitpid(childpid, &exit_status_raw, 0)) == -1) {
+    if (errno == EINTR) {
+      printf("intermediate\n");
+    }
   }
+
+  printf("Child exited with %d\n", WEXITSTATUS(exit_status_raw));
+
+//  if (waitpid(childpid, NULL, 0) == -1) {
+//    perror("perror");
+//    printf("waitpid error\n");
+//    assert(0);
+//  }
 
   /* send a message and verify SIGUSR1 is delivered */
   sigusr1 = 0;
   Mymq_send(mqd, msg5, 5, 5);
   sleep(1);
-  if (sigusr1 != 1)
+  printf("reaching 1\n");
+  if (sigusr1 != 1) {
     err_quit("sigusr1 = %d, expected 1", sigusr1);
-  if ((rc = Mymq_receive(mqd, msg, info.mq_msgsize, &prio)) != 5)
+  }
+  printf("passed usr1  check \n");
+  if ((rc = Mymq_receive(mqd, msg, info.mq_msgsize, &prio)) != 5) {
     err_quit("mq_receive returned %d, expected 5", rc);
+  }
+
+  printf("passed Mymq_receive  check \n");
   if (prio != 5)
     err_quit("mq_receive returned prio %d, expected 5", prio);
+
+  printf("reaching\n");
 
   /* send another and make certain another signal is not sent */
   Mymq_send(mqd, msg2, 2, 2);
