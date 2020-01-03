@@ -6,6 +6,8 @@
 
 #include <iostream>
 
+static const int ONE_SECOND_NANOSECONDS = 1000000000;
+
 TEST(NanoSleep_TimeDiff_Test, 01) {
   struct timespec lhs, rhs, result;
 
