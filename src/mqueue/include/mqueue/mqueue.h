@@ -56,6 +56,12 @@ ssize_t mq_receive(mqd_t, char *, size_t, unsigned int *);
 int mq_send(mqd_t, const char *, size_t, unsigned int);
 int mq_setattr(mqd_t, const struct mq_attr *, struct mq_attr *);
 int mq_unlink(const char *name);
+int mq_timedsend(mqd_t mqdes, const char *msg_ptr,
+                 size_t msg_len, unsigned msg_prio,
+                 const struct timespec *abs_timeout);
+ssize_t mq_timedreceive(mqd_t mqdes, char *msg_ptr,
+                        size_t msg_len, unsigned *msg_prio,
+                        const struct timespec *abs_timeout);
 
 /* 4and the corresponding wrapper functions */
 void Mymq_close(mqd_t);
