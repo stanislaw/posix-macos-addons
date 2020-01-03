@@ -1,9 +1,9 @@
 add_subdirectory(googletest)
 
 set(tests-unit-sources
-  BasicTest.cpp
-  NotificationTest.cpp
-  IPCTest.cpp
+  mqueue-tests/BasicTest.cpp
+  mqueue-tests/NotificationTest.cpp
+  mqueue-tests/IPCTest.cpp
 )
 
 add_executable(tests-unit ${tests-unit-sources})
