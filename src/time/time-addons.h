@@ -7,7 +7,6 @@ extern "C" {
 #endif
 
 extern const int TIMER_ABSTIME;
-extern const int ONE_SECOND_NANOSECONDS;
 
 void __timespec_diff(const struct timespec* lhs,
                      const struct timespec* rhs,

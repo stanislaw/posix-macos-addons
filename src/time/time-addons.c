@@ -4,7 +4,7 @@
 #include <errno.h>
 
 const int TIMER_ABSTIME = 1;
-const int ONE_SECOND_NANOSECONDS = 1000000000;
+static const int ONE_SECOND_NANOSECONDS = 1000000000;
 
 void __timespec_diff(const struct timespec* lhs,
                      const struct timespec* rhs,
@@ -38,7 +38,7 @@ int clock_nanosleep(clockid_t clock_id,
                     struct timespec *rem) {
 
   assert(clock_id == CLOCK_REALTIME || clock_id == CLOCK_MONOTONIC);
-  assert(0 <= req->tv_nsec && req->tv_nsec <= 1000000000);
+  assert(0 <= req->tv_nsec && req->tv_nsec <= ONE_SECOND_NANOSECONDS);
   assert(flags == 0 || flags == TIMER_ABSTIME);
   assert(flags != TIMER_ABSTIME || clock_id == CLOCK_MONOTONIC);
 
