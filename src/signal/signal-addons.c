@@ -1,4 +1,4 @@
-#include "compatibility.h"
+#include "signal-addons.h"
 
 #include <signal.h>
 
