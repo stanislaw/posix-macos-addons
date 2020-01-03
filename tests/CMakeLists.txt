@@ -4,6 +4,8 @@ set(tests-unit-sources
   mqueue-tests/BasicTest.cpp
   mqueue-tests/NotificationTest.cpp
   mqueue-tests/IPCTest.cpp
+  time-tests/NanoSleepTest.cpp
+  time-tests/NanoSleep_TimeDiff_Test.cpp
 )
 
 add_executable(tests-unit ${tests-unit-sources})
@@ -17,6 +19,7 @@ target_link_libraries(tests-unit
   pthread
 
   mqueue
+  time-addons
   compatibility
 
   ${CMAKE_THREAD_LIBS_INIT}
