@@ -54,8 +54,7 @@ TEST_F(MessageQueue_TimedSendReceive_Test, timedSend) {
   attr.mq_maxmsg = 1;
   attr.mq_msgsize = 7;
 
-  mqd =
-    Mymq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+  mqd = mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
 
   assert(mq_send(mqd, msg1, 1, 1) == 0);
 
@@ -73,9 +72,8 @@ TEST_F(MessageQueue_TimedSendReceive_Test, timedReceive_messageExists) {
   attr.mq_maxmsg = 1;
   attr.mq_msgsize = 7;
 
-  mqd =
-    Mymq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
-  ///assert(errno == 0);
+  mqd = mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+  ASSERT_NE(mqd, (mqd_t)-1);
 
   assert(mq_send(mqd, msg3, 3, 3) == 0);
   /// assert(errno == 0);
@@ -95,7 +93,8 @@ TEST_F(MessageQueue_TimedSendReceive_Test, timedReceive_withNoMessages) {
   attr.mq_msgsize = 7;
 
   mqd =
-    Mymq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+    mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+  ASSERT_NE(mqd, (mqd_t)-1);
 
   struct timespec wait_time;
   assert(clock_gettime(CLOCK_REALTIME, &wait_time) == 0);

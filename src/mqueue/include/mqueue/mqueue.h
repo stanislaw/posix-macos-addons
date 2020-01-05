@@ -67,7 +67,6 @@ ssize_t mq_timedreceive(mqd_t mqdes, char *msg_ptr,
 void Mymq_close(mqd_t);
 void Mymq_getattr(mqd_t, struct mq_attr *);
 void Mymq_notify(mqd_t, const struct sigevent *);
-mqd_t Mymq_open(const char *, int, ...);
 ssize_t Mymq_receive(mqd_t, char *, size_t, unsigned int *);
 void Mymq_send(mqd_t, const char *, size_t, unsigned int);
 void Mymq_setattr(mqd_t, const struct mq_attr *, struct mq_attr *);

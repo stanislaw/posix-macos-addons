@@ -58,7 +58,8 @@ TEST_F(IPCTest, 01_parent_sends_to_child) {
   attr.mq_msgsize = 7;
 
   mqd_t mqd =
-    Mymq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+    mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+  ASSERT_NE(mqd, (mqd_t)-1);
 
   pid_t child_pid = fork();
   if (child_pid == -1) {
@@ -99,7 +100,8 @@ TEST_F(IPCTest, 02_child_sends_to_parent) {
   attr.mq_msgsize = 7;
 
   mqd_t mqd =
-    Mymq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+    mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+  ASSERT_NE(mqd, (mqd_t)-1);
 
   pid_t child_pid = fork();
   if (child_pid == -1) {

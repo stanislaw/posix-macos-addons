@@ -179,24 +179,4 @@ err:
   errno = save_errno;
   return ((mqd_t)-1);
 }
-/* end mq_open3 */
 
-mqd_t Mymq_open(const char *pathname, int oflag, ...) {
-  mqd_t mqd;
-  va_list ap;
-  mode_t mode;
-  struct mq_attr *attr;
-
-  if (oflag & O_CREAT) {
-    va_start(ap, oflag); /* init ap to final named argument */
-    mode = va_arg(ap, va_mode_t);
-    attr = va_arg(ap, struct mq_attr *);
-    if ((mqd = mq_open(pathname, oflag, mode, attr)) == (mqd_t)-1)
-      err_sys("mq_open error for %s", pathname);
-    va_end(ap);
-  } else {
-    if ((mqd = mq_open(pathname, oflag)) == (mqd_t)-1)
-      err_sys("mq_open error for %s", pathname);
-  }
-  return (mqd);
-}

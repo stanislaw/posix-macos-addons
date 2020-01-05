@@ -57,7 +57,8 @@ TEST_F(NotificationTest, 01_registrationOnlyPossibleOnce) {
   struct sigevent sigev;
 
   mqd =
-    Mymq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, NULL);
+    mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, NULL);
+  ASSERT_NE(mqd, (mqd_t)-1);
 
   sigev.sigev_notify = SIGEV_SIGNAL;
   sigev.sigev_signo = SIGUSR1;
@@ -83,7 +84,8 @@ TEST_F(NotificationTest, 02_registrationOnlyPossibleOnce_childCannotRegister) {
   struct sigevent sigev;
 
   mqd =
-    Mymq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, NULL);
+    mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, NULL);
+  ASSERT_NE(mqd, (mqd_t)-1);
 
   sigev.sigev_notify = SIGEV_SIGNAL;
   sigev.sigev_signo = SIGUSR1;
@@ -124,7 +126,8 @@ TEST_F(NotificationTest, 03_sendAMessageResultsInSIGUSR1_butOnlyOnce) {
   attr.mq_msgsize = 7;
 
   mqd =
-    Mymq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+    mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+  ASSERT_NE(mqd, (mqd_t)-1);
 
   sigev.sigev_notify = SIGEV_SIGNAL;
   sigev.sigev_signo = SIGUSR1;
@@ -166,7 +169,8 @@ TEST_F(NotificationTest, 04_USR1_is_not_delivered_if_blocked_by_receive) {
   attr.mq_msgsize = 7;
 
   mqd =
-    Mymq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+    mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+  ASSERT_NE(mqd, (mqd_t)-1);
 
   sigev.sigev_notify = SIGEV_SIGNAL;
   sigev.sigev_signo = SIGUSR1;
