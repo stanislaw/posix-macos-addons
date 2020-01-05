@@ -4,6 +4,7 @@ set(tests-unit-sources
   mqueue-tests/BasicTest.cpp
   mqueue-tests/NotificationTest.cpp
   mqueue-tests/IPCTest.cpp
+  mqueue-tests/TimedSendReceiveTest.cpp
   time-tests/NanoSleepTest.cpp
   time-tests/NanoSleep_TimeDiff_Test.cpp
 )

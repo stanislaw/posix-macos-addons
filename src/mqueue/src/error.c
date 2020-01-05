@@ -30,7 +30,7 @@ err_ret(const char *fmt, ...)
 
 void err_sys(const char *fmt, ...)
 {
-//    assert(0 && "Should not reach here");
+	assert(0 && "Should not reach here");
 
 	va_list		ap;
 	va_start(ap, fmt);
