@@ -5,6 +5,7 @@ set(tests-unit-sources
   mqueue-tests/NotificationTest.cpp
   mqueue-tests/IPCTest.cpp
   mqueue-tests/TimedSendReceiveTest.cpp
+  pthread-tests/Pthread_SetSchedPrio_Test.cpp
   semaphore-tests/Semaphore_Test.cpp
   time-tests/NanoSleepTest.cpp
   time-tests/NanoSleep_TimeDiff_Test.cpp
@@ -22,6 +23,7 @@ target_link_libraries(tests-unit
 
   mqueue
   time-addons
+  posix-mac-pthread
   posix-mac-semaphore
   compatibility
 
