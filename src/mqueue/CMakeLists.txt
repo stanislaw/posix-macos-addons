@@ -14,4 +14,4 @@ set(SOURCES
 
 add_library(mqueue ${SOURCES})
 target_include_directories(mqueue PUBLIC include include/mqueue)
-target_link_libraries(mqueue compatibility)
+target_link_libraries(mqueue compatibility rt)

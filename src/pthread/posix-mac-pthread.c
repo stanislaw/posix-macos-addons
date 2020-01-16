@@ -1,4 +1,4 @@
-#include "pthread-mac.h"
+#include "posix-mac-pthread.h"
 
 int pthread_setschedprio(pthread_t thread, int prio) {
   /// TODO/Stanislaw: read the existing parameters from threads, not create new.
