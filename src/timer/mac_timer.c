@@ -50,6 +50,9 @@ int timer_create(clockid_t clockid, struct sigevent *sevp, timer_t *timerid) {
 
   dispatch_source_set_cancel_handler(new_timer, ^{
     /// BUG IN CLIENT OF LIBDISPATCH: Semaphore object deallocated while in use
+    /// This should never happen but it does in CFS OSAL tests for POSIX.
+    /// Putting this additional dispatch_semaphore_signal for now because it
+    /// makes the tests pass.
     /// https://stackoverflow.com/questions/8287621/why-does-this-code-cause-exc-bad-instruction
     dispatch_semaphore_signal(semaphore);
 
