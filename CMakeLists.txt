@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
+project(POSIX-Mac-Addons C)
+
 set (CMAKE_CXX_STANDARD 11)
 
 option(NO_FLAGS "Disable usual compilation flags" OFF)

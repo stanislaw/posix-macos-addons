@@ -1,3 +1,5 @@
+project(POSIX-Mac-Addons-Tests C CXX)
+
 add_subdirectory(googletest)
 
 set(tests-unit-sources
