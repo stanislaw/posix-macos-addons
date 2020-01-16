@@ -12,6 +12,7 @@ target_link_libraries(posix-mac-addons
   mqueue
   posix-mac-pthread
   posix-mac-semaphore
+  posix-mac-stubs
   posix-mac-time
   posix-mac-timer
   rt
