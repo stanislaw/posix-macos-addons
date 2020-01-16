@@ -24,11 +24,7 @@ target_link_libraries(tests-unit
   google-test
   pthread
 
-  mqueue
-  time-addons
-  posix-mac-pthread
-  posix-mac-semaphore
-  mac-timer
+  posix-mac-addons
 
   ${CMAKE_THREAD_LIBS_INIT}
 )
