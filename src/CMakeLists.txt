@@ -1,6 +1,5 @@
 add_subdirectory(mqueue)
 add_subdirectory(pthread)
-add_subdirectory(signal)
 add_subdirectory(semaphore)
 add_subdirectory(time)
 add_subdirectory(timer)

@@ -27,7 +27,6 @@ target_link_libraries(tests-unit
   posix-mac-pthread
   posix-mac-semaphore
   mac-timer
-  compatibility
 
   ${CMAKE_THREAD_LIBS_INIT}
 )
