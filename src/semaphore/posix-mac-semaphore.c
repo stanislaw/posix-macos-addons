@@ -163,3 +163,20 @@ int mac_sem_timedwait(mac_sem_t *psem, const struct timespec *abstim) {
   }
   return 0;
 }
+
+int mac_sem_getvalue(mac_sem_t *sem, int *sval) {
+  assert(sval);
+
+  int value;
+
+  // TODO: Written very fast to make things compiled. Check this.
+  assert(pthread_mutex_lock(&sem->count_lock) == 0);
+
+  value = sem->count;
+
+  assert(pthread_mutex_unlock(&sem->count_lock) == 0);
+
+  *sval = value;
+
+  return 0;
+}

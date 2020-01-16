@@ -19,6 +19,7 @@ int mac_sem_post(mac_sem_t *psem);
 int mac_sem_trywait(mac_sem_t *psem);
 int mac_sem_wait(mac_sem_t *psem);
 int mac_sem_timedwait(mac_sem_t *psem, const struct timespec *abstim);
+int mac_sem_getvalue(mac_sem_t *sem, int *sval);
 
 #ifdef __cplusplus
 }
