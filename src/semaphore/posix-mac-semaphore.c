@@ -1,4 +1,4 @@
-#include "semaphore-mac.h"
+#include "posix-mac-semaphore.h"
 
 #include <assert.h>
 #include <errno.h>

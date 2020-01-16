@@ -1,6 +1,6 @@
-#include "time-addons.h"
+#include "posix-mac-time.h"
 
-#include "semaphore-mac.h"
+#include "posix-mac-semaphore.h"
 
 #include <gtest/gtest.h>
 
