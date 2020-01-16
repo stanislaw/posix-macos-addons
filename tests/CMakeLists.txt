@@ -9,6 +9,7 @@ set(tests-unit-sources
   semaphore-tests/Semaphore_Test.cpp
   time-tests/NanoSleepTest.cpp
   time-tests/NanoSleep_TimeDiff_Test.cpp
+  timer-tests/TimerTest.cpp
 )
 
 add_executable(tests-unit ${tests-unit-sources})
@@ -25,6 +26,7 @@ target_link_libraries(tests-unit
   time-addons
   posix-mac-pthread
   posix-mac-semaphore
+  mac-timer
   compatibility
 
   ${CMAKE_THREAD_LIBS_INIT}

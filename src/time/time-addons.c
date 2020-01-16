@@ -2,9 +2,9 @@
 
 #include <assert.h>
 #include <errno.h>
+#include <mach/clock_types.h>
 
 const int TIMER_ABSTIME = 1;
-static const int ONE_SECOND_NANOSECONDS = 1000000000;
 
 void __timespec_diff(const struct timespec* lhs,
                      const struct timespec* rhs,
@@ -28,7 +28,7 @@ void __timespec_diff(const struct timespec* lhs,
     }
 
     out->tv_sec = out->tv_sec - 1;
-    out->tv_nsec = out->tv_nsec + ONE_SECOND_NANOSECONDS;
+    out->tv_nsec = out->tv_nsec + NSEC_PER_SEC;
   }
 }
 
@@ -38,7 +38,7 @@ int clock_nanosleep(clockid_t clock_id,
                     struct timespec *rem) {
 
   assert(clock_id == CLOCK_REALTIME || clock_id == CLOCK_MONOTONIC);
-  assert(0 <= req->tv_nsec && req->tv_nsec <= ONE_SECOND_NANOSECONDS);
+  assert(0 <= req->tv_nsec && req->tv_nsec <= NSEC_PER_SEC);
   assert(flags == 0 || flags == TIMER_ABSTIME);
   assert(flags != TIMER_ABSTIME || clock_id == CLOCK_MONOTONIC);
 
