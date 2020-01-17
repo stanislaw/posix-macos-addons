@@ -9,6 +9,7 @@ set(tests-unit-sources
   mqueue-tests/TimedSendReceiveTest.cpp
   pthread-tests/Pthread_SetSchedPrio_Test.cpp
   semaphore-tests/Semaphore_Test.cpp
+  semaphore-tests/Semaphore2_Test.cpp
   time-tests/NanoSleepTest.cpp
   time-tests/NanoSleep_TimeDiff_Test.cpp
   timer-tests/TimerTest.cpp
