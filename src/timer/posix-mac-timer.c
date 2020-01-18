@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static const size_t TIMERS_MAX = 100U;
+#define TIMERS_MAX 100U
 
 typedef struct {
   dispatch_source_t source;
@@ -12,10 +12,11 @@ typedef struct {
   dispatch_semaphore_t semaphore;
 } timer_entry;
 
-static struct {
+typedef struct timer_storage_t {
   timer_entry timers[TIMERS_MAX];
   uint32_t count;
-} timer_storage = {0};
+} timer_storage_t;
+static timer_storage_t timer_storage = { .timers = {{0}}, .count = 0 };
 
 static dispatch_queue_t sync_queue() {
   static dispatch_once_t guard;

@@ -5,7 +5,7 @@
 #include <iostream>
 
 TEST(TimerTest, 01) {
-  struct timespec now, then;
+  struct timespec now;
 
   assert(clock_gettime(CLOCK_REALTIME, &now) == 0);
 
