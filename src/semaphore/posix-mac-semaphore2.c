@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <errno.h>
+#include <stdio.h>
 #include <time.h>
 
 static
@@ -31,27 +32,106 @@ void timespec_diff(const struct timespec* lhs,
   }
 }
 
+/// NASA CFS tests do not balance calls to init, wait, post and destroy and
+/// this results in
+/// "BUG IN CLIENT OF LIBDISPATCH: Semaphore object deallocated while in use"
+/// crashes. There are two cases:
+/// 1) disposing a semaphore which is being waited on
+/// 2) calling wait on a disposed semaphore
+/// We prefer to keep a sync queue to count calls to init, wait, post, destroy
+/// to prevent the code from crashing.
+/// TODO: Would be great to remove this in the future.
+static dispatch_queue_t sync_queue() {
+  static dispatch_once_t guard;
+  static dispatch_queue_t queue;
+  dispatch_once(&guard, ^{
+    queue = dispatch_queue_create("semaphore sync queue", DISPATCH_QUEUE_SERIAL);
+  });
+  return queue;
+}
+
+static uint64_t MAGIC_NUMBER = UINT64_MAX - 0xdeadbeafU;
+
+void reset_count(mac_sem2_t *psem) {
+  dispatch_sync(sync_queue(), ^{
+    dispatch_queue_set_specific(sync_queue(), *psem, (void *)0, NULL);
+  });
+}
+
+void increment_count(mac_sem2_t *psem) {
+  dispatch_sync(sync_queue(), ^{
+    uint64_t
+      count = (uint64_t) dispatch_queue_get_specific(sync_queue(), *psem);
+    assert(count != (MAGIC_NUMBER - 1));
+    assert(count != MAGIC_NUMBER);
+    count++;
+    dispatch_queue_set_specific(sync_queue(), *psem, (void *) count, NULL);
+  });
+}
+
+void decrement_count(mac_sem2_t *psem) {
+  dispatch_sync(sync_queue(), ^{
+    uint64_t
+      count = (uint64_t) dispatch_queue_get_specific(sync_queue(), *psem);
+    assert(count != MAGIC_NUMBER);
+    count = count == 0 ? 0 : count - 1;
+    dispatch_queue_set_specific(sync_queue(), *psem, (void *) count, NULL);
+  });
+}
+
+void finalize_count(mac_sem2_t *psem) {
+  dispatch_sync(sync_queue(), ^{
+    uint64_t count = MAGIC_NUMBER;
+    dispatch_queue_set_specific(sync_queue(), *psem, (void *) count, NULL);
+  });
+}
+
+uint64_t get_count(mac_sem2_t *psem) {
+  __block uint64_t count;
+  dispatch_sync(sync_queue(), ^{
+    count = (uint64_t) dispatch_queue_get_specific(sync_queue(), *psem);
+  });
+  return count;
+}
+
 int mac_sem2_init(mac_sem2_t *psem, int flags, unsigned count) {
-  assert(flags == 0);
   *psem = dispatch_semaphore_create(count);
+  reset_count(psem);
   return 0;
 }
 
 int mac_sem2_destroy(mac_sem2_t *psem) {
-  dispatch_semaphore_signal(*psem);
-
+  uint64_t count = get_count(psem);
+  if (count == MAGIC_NUMBER) {
+    printf("warning: mac_sem2_destroy: the over-release is detected\n");
+    return 0;
+  } else if (count > 0) {
+    printf("warning: mac_sem2_destroy: the unbalanced calls to wait/post is detected with count == %u\n", (uint32_t)count);
+    for (int i = 0; i < count; i++) {
+      dispatch_semaphore_signal(*psem);
+    }
+  }
+  finalize_count(psem);
   dispatch_release(*psem);
   return 0;
 }
 
 int mac_sem2_post(mac_sem2_t *psem) {
+  uint64_t count = get_count(psem);
+  if (count == MAGIC_NUMBER) {
+    printf("warning: mac_sem2_post: post on released semaphore is detected\n");
+    return 0;
+  }
+  decrement_count(psem);
   dispatch_semaphore_signal(*psem);
   return 0;
 }
 
 int mac_sem2_trywait(mac_sem2_t *psem) {
+  increment_count(psem);
   int result = dispatch_semaphore_wait(*psem, DISPATCH_TIME_NOW);
   if (result != 0) {
+    decrement_count(psem);
     errno = ETIMEDOUT;
     return -1;
   }
@@ -59,11 +139,19 @@ int mac_sem2_trywait(mac_sem2_t *psem) {
 }
 
 int mac_sem2_wait(mac_sem2_t *psem) {
+  uint64_t count = get_count(psem);
+  if (count == MAGIC_NUMBER) {
+    printf("warning: mac_sem2_wait: wait on released semaphore is detected\n");
+    return 0;
+  }
+  increment_count(psem);
   dispatch_semaphore_wait(*psem, DISPATCH_TIME_FOREVER);
   return 0;
 }
 
 int mac_sem2_timedwait(mac_sem2_t *psem, const struct timespec *abstim) {
+  increment_count(psem);
+
   struct timespec now;
   clock_gettime( CLOCK_REALTIME, &now);
 
@@ -75,10 +163,10 @@ int mac_sem2_timedwait(mac_sem2_t *psem, const struct timespec *abstim) {
 
   int result = dispatch_semaphore_wait(*psem, timeout);
   if (result != 0) {
+    decrement_count(psem);
     errno = ETIMEDOUT;
     return -1;
   }
-
   return 0;
 }
 
