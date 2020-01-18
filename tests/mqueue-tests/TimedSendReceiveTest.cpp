@@ -8,27 +8,15 @@
 #define BUFFLEN 100
 static char msg[BUFFLEN]; /* receive buffer */
 
-static char msg0[] = "";
+//static char msg0[] = "";
 static char msg1[] = "1";
 static char msg2[] = "22";
 static char msg3[] = "333";
-static char msg4[] = "4444";
-static char msg5[] = "55555";
-static char msg6[] = "666666";
-static char msg7[] = "7777777";
-static char msg8[] = "88888888";
-
-static Sigfunc *Signal(int signo, Sigfunc *func) /* for our signal() function */
-{
-  Sigfunc *sigfunc;
-
-  if ((sigfunc = signal(signo, func)) == SIG_ERR) {
-    assert(0 && "Should not reach here");
-    err_sys("signal error");
-  }
-
-  return (sigfunc);
-}
+//static char msg4[] = "4444";
+//static char msg5[] = "55555";
+//static char msg6[] = "666666";
+//static char msg7[] = "7777777";
+//static char msg8[] = "88888888";
 
 static const char message_queue_name[] = "test_mqueue";
 

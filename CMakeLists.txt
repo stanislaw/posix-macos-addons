@@ -5,10 +5,12 @@ project(POSIX-Mac-Addons C)
 set (CMAKE_CXX_STANDARD 11)
 
 option(NO_FLAGS "Disable usual compilation flags" OFF)
-if(NOT DEFINED NO_FLAGS)
+if(NOT NO_FLAGS)
   set(CMAKE_C_FLAGS "-Werror -Wall -Wunused -Wpedantic -fsanitize=address")
   set(CMAKE_CXX_FLAGS "-Werror -Wall -Wunused -Wpedantic -fsanitize=address")
   set(CMAKE_LINKER_FLAGS_DEBUG "-fsanitize=address")
+else()
+  message("NO_FLAGS is provided: skipping strict compilation flags.")
 endif()
 
 add_subdirectory(src)
