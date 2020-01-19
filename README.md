@@ -33,6 +33,21 @@ The idea behind this repository is to finally have a single place for these
 marginal POSIX functions and the hope is that they should be a good-enough
 replacement for their real POSIX equivalents.
 
+## Founding Principles
+
+- This repo is based on the
+  [Cunningham's Law](https://en.wikipedia.org/wiki/Ward_Cunningham#Cunningham%27s_Law):
+  the code in this repository can be wrong but at least it is there which makes
+  it available for use and further improvement.
+
+- Every port should have at least basic test code coverage but it would be great
+  to have tests that ensure the exact behavior of the code on macOS compared to
+  the real POSIX equivalents.
+
+- The code is located in the `src` folder with every port in a subfolder. It
+  should be possible to use both full `posix-addons` CMake project and each and
+  every of the sub-folders standalone.
+
 ## Contents
 
 ### mqueue (POSIX message queues)
@@ -48,17 +63,71 @@ converted to a Google Test suite.
 
 **Status:** the code seems to work, but needs some further cleanups.
 
-**Known limitations:** this implementation uses `sigqueue` for asynchronous
-notifications via `mq_notify`. `sigqueue` and the real-time signals
-functionality is not available on macOS. This is not a problem if you want to
-use `mqueue` with synchronous calls only.
+#### Known limitations
 
-## Founding Principles
+1. this implementation uses `sigqueue` for asynchronous notifications via
+   `mq_notify`. `sigqueue` and the real-time signals functionality is not
+   available on macOS. This is not a problem if you want to use `mqueue` with
+   synchronous calls only.
 
-- Every port should have at least basic test code coverage but it would be great
-  to have tests that ensure the exact behavior of the code on macOS compared to
-  the real POSIX equivalents.
+2. The Linux implementation uses a virtual file system while memory-mapped files
+   on macOS are created in a user's file system. This means that the naming
+   conventions are different: for example you cannot create mqueue in your root
+   directory like `/queue-1`.
 
-- The code is located in the `src` folder with every port in a subfolder. It
-  should be possible to use both full `posix-addons` CMake project and each and
-  every of the sub-folders standalone.
+### pthread
+
+`pthread_setschedprio` function is implemented as a call to the
+`pthread_setschedparam` function which is available on macOS.
+
+### semaphore
+
+Unnamed semaphores: `sem_init`, `sem_wait`, `sem_post`, `sem_destroy` are
+deprecated on macOS. Additionally, the `sem_timedwait` does not exist.
+
+There are two implementations: `mac_sem_*` and `mac_sem2_*`.
+
+The `mac_sem_*` implementation is based on `pthread_mutex` and `pthread_cond`
+and is taken from this StackOverflow thread with minor adaptations:
+[POSIX Semaphores on Mac OS X: sem_timedwait alternative](https://stackoverflow.com/a/48778462/598057).
+
+The `mac_sem2_*` implementation is based on GCD semaphores.
+
+#### Known issue
+
+GCD semaphores crash with `BUG IN CLIENT OF LIBDISPATCH` when you destroy a
+semaphore which is being waited on this is why in the `mac_sem2_*`
+implementation there is a layer that tracks how many times a certain semaphore
+was waited/posted to release the semaphore manually when it gets destroyed. This
+behavior should be disabled in the future and was only needed to make one
+important project's tests to pass without crashing.
+
+### time
+
+The `clock_nanosleep` is implemented as a call to `nanosleep`. The code is
+inspired by this implementation:
+[btest-opensource/timing_mach.h](https://github.com/samm-git/btest-opensource/blob/236d9a79b03c5c696832a1f5134c792a7ecb3ef1/timing_mach.h).
+
+Possible issue:
+[nasa/osal#337](https://github.com/nasa/osal/issues/337#issuecomment-570807421).
+
+### timer
+
+A rather limited implementation based on the GCD timers.
+
+The implementation has an additional method `timer_poll` to simulate polling for
+the timer's ticks to substitute waiting on `sigwait` to receive a signal from a
+timer when configured with `SIGEV_SIGNAL`.
+
+## Not implemented yet
+
+- `pthread_mutex_timedlock`,
+  [starting point](https://ponymail-vm.apache.org/_GUI_/thread.html/74ee9ce08237f9c26f8be10a1c1015ab058bb923f528f921c52497ad@%3Cdev.apr.apache.org%3E).
+
+## Similar repositories
+
+We haven't checked the following implementations yet:
+
+- https://github.com/ChisholmKyle/PosixMachTiming
+- https://stackoverflow.com/questions/5167269/clock-gettime-alternative-in-mac-os-x
+- https://speakerdeck.com/jj1bdx/how-i-discover-a-working-implementation-of-clock-nanosleep-for-macos-in-cpan-time-hires?slide=8
