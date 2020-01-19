@@ -4,6 +4,25 @@ This is a collection of the POSIX functions which are not available on macOS.
 
 The status of the code: hacky, experimental.
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Disclaimer](#disclaimer)
+- [Background](#background)
+- [Founding Principles](#founding-principles)
+- [Contents](#contents)
+  - [mqueue (POSIX message queues)](#mqueue-posix-message-queues)
+    - [Known limitations](#known-limitations)
+  - [pthread](#pthread)
+  - [semaphore](#semaphore)
+    - [Known issue](#known-issue)
+  - [time](#time)
+  - [timer](#timer)
+- [Not implemented yet](#not-implemented-yet)
+- [Similar repositories](#similar-repositories)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 ## Disclaimer
 
 Please note that the exact implementation of the same functionality for every
@@ -45,8 +64,8 @@ replacement for their real POSIX equivalents.
   the real POSIX equivalents.
 
 - The code is located in the `src` folder with every port in a subfolder. It
-  should be possible to use both full `posix-addons` CMake project and each and
-  every of the sub-folders standalone.
+  should be possible to use both full `posix-mac-addons` CMake project and each
+  and every of the sub-folders standalone.
 
 ## Contents
 
@@ -118,6 +137,15 @@ A rather limited implementation based on the GCD timers.
 The implementation has an additional method `timer_poll` to simulate polling for
 the timer's ticks to substitute waiting on `sigwait` to receive a signal from a
 timer when configured with `SIGEV_SIGNAL`.
+
+## Known experimental uses
+
+This code is being tested as part of the experimental macOS ports of the
+following projects:
+
+- [nasa/osal](https://github.com/nasa/osal)
+
+- [DLR-RY/OUTPOST](https://github.com/DLR-RY/outpost-core)
 
 ## Not implemented yet
 
