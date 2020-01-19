@@ -4,20 +4,22 @@ This is a collection of the POSIX functions which are not available on macOS.
 
 The status of the code: hacky, experimental.
 
+## Table of Contents
+
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 
 - [Disclaimer](#disclaimer)
 - [Background](#background)
 - [Founding Principles](#founding-principles)
 - [Contents](#contents)
   - [mqueue (POSIX message queues)](#mqueue-posix-message-queues)
-    - [Known limitations](#known-limitations)
   - [pthread](#pthread)
   - [semaphore](#semaphore)
-    - [Known issue](#known-issue)
   - [time](#time)
   - [timer](#timer)
+- [Known experimental uses](#known-experimental-uses)
 - [Not implemented yet](#not-implemented-yet)
 - [Similar repositories](#similar-repositories)
 
