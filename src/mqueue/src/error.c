@@ -1,8 +1,14 @@
-#include	"unpipc.h"
+#include "mqueue.h"
 
-#include	<stdarg.h>		/* ANSI C header file */
-#include	<syslog.h>		/* for syslog() */
 #include <assert.h>
+#include <errno.h>
+#include <stdarg.h>
+#include <syslog.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define	MAXLINE 4096 /* max text line length */
 
 int		daemon_proc;		/* set nonzero by daemon_init() */
 

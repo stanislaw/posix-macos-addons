@@ -1,7 +1,7 @@
 #include "mqueue.h"
 
-#include "unpipc.h"
-
+#include <errno.h>
+#include <stdlib.h>
 #include <sys/mman.h>
 
 int mq_close(mqd_t mqd) {

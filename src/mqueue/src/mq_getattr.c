@@ -1,6 +1,6 @@
-/* include mq_getattr */
-#include	"unpipc.h"
-#include	"mqueue.h"
+#include "mqueue.h"
+
+#include <errno.h>
 
 int
 mq_getattr(mqd_t mqd, struct mq_attr *mqstat)

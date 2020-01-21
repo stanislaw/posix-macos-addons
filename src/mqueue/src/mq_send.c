@@ -1,8 +1,9 @@
 #include "mqueue.h"
 
-#include "unpipc.h"
-
+#include <errno.h>
+#include <fcntl.h>
 #include <signal.h>
+#include <string.h>
 
 int mq_send(mqd_t mqd, const char *ptr, size_t len, unsigned int prio) {
   int n;
