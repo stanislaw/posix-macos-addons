@@ -10,6 +10,7 @@ set(tests-unit-sources
   pthread-tests/Pthread_SetSchedPrio_Test.cpp
   semaphore-tests/Semaphore_Test.cpp
   semaphore-tests/Semaphore2_Test.cpp
+  semaphore-tests/Semaphore2_Debug_Test.cpp
   time-tests/NanoSleepTest.cpp
   time-tests/NanoSleep_TimeDiff_Test.cpp
   timer-tests/TimerTest.cpp

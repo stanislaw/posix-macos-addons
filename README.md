@@ -9,7 +9,6 @@ The status of the code: hacky, experimental.
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
 - [Disclaimer](#disclaimer)
 - [Background](#background)
 - [Founding Principles](#founding-principles)
@@ -117,11 +116,11 @@ The `mac_sem2_*` implementation is based on GCD semaphores.
 #### Known issue
 
 GCD semaphores crash with `BUG IN CLIENT OF LIBDISPATCH` when you destroy a
-semaphore which is being waited on this is why in the `mac_sem2_*`
-implementation there is a layer that tracks how many times a certain semaphore
-was waited/posted to release the semaphore manually when it gets destroyed. This
-behavior should be disabled in the future and was only needed to make one
-important project's tests to pass without crashing.
+semaphore which is being waited on this is why there is a debug version of the
+second implementation: `mac_sem2_debug_*` where there is a layer that tracks how
+many times a certain semaphore was waited/posted to release the semaphore
+manually when it gets destroyed. This behavior was needed to make one important
+project's tests to pass without crashing.
 
 ### time
 
