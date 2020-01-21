@@ -1,6 +1,7 @@
-/* include mq_notify */
 #include "mqueue.h"
-#include "unpipc.h"
+
+#include <errno.h>
+#include <stdio.h>
 
 int mq_notify(mqd_t mqd, const struct sigevent *notification) {
   int n;

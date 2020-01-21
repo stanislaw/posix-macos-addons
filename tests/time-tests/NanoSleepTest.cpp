@@ -1,7 +1,5 @@
 #include "posix-mac-time.h"
 
-#include "unpipc.h"
-
 #include <gtest/gtest.h>
 
 #include <iostream>

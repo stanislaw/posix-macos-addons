@@ -1,6 +1,7 @@
-/* include mq_setattr */
-#include	"unpipc.h"
-#include	"mqueue.h"
+#include "mqueue.h"
+
+#include <errno.h>
+#include <fcntl.h>
 
 int
 mq_setattr(mqd_t mqd, const struct mq_attr *mqstat,

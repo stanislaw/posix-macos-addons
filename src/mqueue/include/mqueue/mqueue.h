@@ -1,3 +1,4 @@
+#include <fcntl.h>
 #include <pthread.h>
 #include <signal.h>
 #include <unistd.h>
@@ -5,6 +6,9 @@
 #ifdef __cplusplus
 extern "C"{
 #endif
+
+/// TODO: macOS should have this defined
+#define	FILE_MODE	(S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH)
 
 typedef struct mq_info *mqd_t;        /* opaque datatype */
 
@@ -71,6 +75,12 @@ ssize_t Mymq_receive(mqd_t, char *, size_t, unsigned int *);
 void Mymq_send(mqd_t, const char *, size_t, unsigned int);
 void Mymq_setattr(mqd_t, const struct mq_attr *, struct mq_attr *);
 void Mymq_unlink(const char *name);
+
+void err_dump(const char *, ...);
+void err_msg(const char *, ...);
+void err_quit(const char *, ...);
+void err_ret(const char *, ...);
+void err_sys(const char *, ...);
 
 #ifdef __cplusplus
 }

@@ -1,11 +1,16 @@
-/* include mq_open1 */
 #include "mqueue.h"
-#include "unpipc.h"
 
+#include <errno.h>
+#include <fcntl.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 
 #define MAX_TRIES 10 /* for waiting for initialization */
+
+/// TODO: CHECK THIS
+#define	va_mode_t	int
 
 struct mq_attr defattr = {0, 128, 1024, 0};
 

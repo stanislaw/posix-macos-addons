@@ -1,5 +1,4 @@
 #include "mqueue.h"
-#include "unpipc.h"
 
 #include <gtest/gtest.h>
 
@@ -18,6 +17,7 @@ static char msg6[] = "666666";
 //static char msg7[] = "7777777";
 //static char msg8[] = "88888888";
 
+typedef	void Sigfunc(int);
 static Sigfunc *Signal(int signo, Sigfunc *func) /* for our signal() function */
 {
   Sigfunc *sigfunc;
