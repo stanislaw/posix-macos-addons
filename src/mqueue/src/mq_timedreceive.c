@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <errno.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/file.h>
 
@@ -57,8 +58,9 @@ ssize_t mq_timedreceive(mqd_t mqd,
   /* end mq_receive1 */
   /* include mq_receive2 */
 
-  if ((index = mqhdr->mqh_head) == 0)
-    err_dump("mq_receive: curmsgs = %ld; head = 0", attr->mq_curmsgs);
+  if ((index = mqhdr->mqh_head) == 0) {
+    printf("mq_receive: curmsgs = %ld; head = 0\n", attr->mq_curmsgs);
+  }
 
   msghdr = (struct mymsg_hdr *)&mptr[index];
   mqhdr->mqh_head = msghdr->msg_next; /* new head of list */

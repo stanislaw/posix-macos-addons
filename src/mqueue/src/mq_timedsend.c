@@ -1,6 +1,7 @@
 #include "mqueue.h"
 
 #include <errno.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/file.h>
 
@@ -68,7 +69,7 @@ int mq_timedsend(mqd_t mqd,
 
   /* nmsghdr will point to new message */
   if ((freeindex = mqhdr->mqh_free) == 0) {
-    err_dump("mq_send: curmsgs = %ld; free = 0", attr->mq_curmsgs);
+    printf("mq_send: curmsgs = %ld; free = 0\n", attr->mq_curmsgs);
   }
   nmsghdr = (struct mymsg_hdr *)&mptr[freeindex];
   nmsghdr->msg_prio = prio;

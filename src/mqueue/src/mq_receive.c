@@ -2,6 +2,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <stdio.h>
 #include <string.h>
 
 ssize_t mq_receive(mqd_t mqd, char *ptr, size_t maxlen, unsigned int *priop) {
@@ -45,8 +46,9 @@ ssize_t mq_receive(mqd_t mqd, char *ptr, size_t maxlen, unsigned int *priop) {
   /* end mq_receive1 */
   /* include mq_receive2 */
 
-  if ((index = mqhdr->mqh_head) == 0)
-    err_dump("mq_receive: curmsgs = %ld; head = 0", attr->mq_curmsgs);
+  if ((index = mqhdr->mqh_head) == 0) {
+    printf("mq_receive: curmsgs = %ld; head = 0\n", attr->mq_curmsgs);
+  }
 
   msghdr = (struct mymsg_hdr *)&mptr[index];
   mqhdr->mqh_head = msghdr->msg_next; /* new head of list */
@@ -77,7 +79,7 @@ ssize_t Mymq_receive(mqd_t mqd, char *ptr, size_t len, unsigned int *priop) {
   ssize_t n;
 
   if ((n = mq_receive(mqd, ptr, len, priop)) == -1) {
-    err_sys("mq_receive error TODO");
+    printf("mq_receive error TODO\n");
   }
 
   return (n);

@@ -1,4 +1,6 @@
-#include	"mqueue.h"
+#include "mqueue.h"
+
+#include <stdio.h>
 
 int mq_unlink(const char *pathname) {
   if (unlink(pathname) == -1) {
@@ -10,6 +12,6 @@ int mq_unlink(const char *pathname) {
 void
 Mymq_unlink(const char *pathname) {
   if (mq_unlink(pathname) == -1) {
-    err_sys("mymq_unlink error");
+    printf("mymq_unlink error\n");
   }
 }

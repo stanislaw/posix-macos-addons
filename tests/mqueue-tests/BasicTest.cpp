@@ -24,7 +24,7 @@ Sigfunc *Signal(int signo, Sigfunc *func) /* for our signal() function */
 
   if ((sigfunc = signal(signo, func)) == SIG_ERR) {
     assert(0 && "Should not reach here");
-    err_sys("signal error");
+    printf("signal error\n");
   }
 
   return (sigfunc);

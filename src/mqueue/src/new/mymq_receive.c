@@ -42,8 +42,9 @@ mymq_receive(mymqd_t mqd, char *ptr, size_t maxlen, unsigned int *priop)
 		}
 	}
 
-	if ( (index = mqhdr->mqh_head) == 0)
-		err_dump("mymq_receive: curmsgs = %ld; head = 0", attr->mq_curmsgs);
+	if ( (index = mqhdr->mqh_head) == 0) {
+        printf("mymq_receive: curmsgs = %ld; head = 0\n", attr->mq_curmsgs);
+    }
 
 	msghdr = (struct mymsg_hdr *) &mptr[index];
 	mqhdr->mqh_head = msghdr->msg_next;	/* new head of list */

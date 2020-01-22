@@ -9,7 +9,6 @@ set(SOURCES
   src/mq_timedreceive.c
   src/mq_timedsend.c
   src/mq_unlink.c
-  src/error.c
 )
 
 add_library(mqueue ${SOURCES})

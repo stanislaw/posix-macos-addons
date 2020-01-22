@@ -3,6 +3,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <stdio.h>
 #include <string.h>
 
 int mq_send(mqd_t mqd, const char *ptr, size_t len, unsigned int prio) {
@@ -59,7 +60,7 @@ int mq_send(mqd_t mqd, const char *ptr, size_t len, unsigned int prio) {
 
   /* nmsghdr will point to new message */
   if ((freeindex = mqhdr->mqh_free) == 0) {
-    err_dump("mq_send: curmsgs = %ld; free = 0", attr->mq_curmsgs);
+    printf("mq_send: curmsgs = %ld; free = 0\n", attr->mq_curmsgs);
   }
   nmsghdr = (struct mymsg_hdr *)&mptr[freeindex];
   nmsghdr->msg_prio = prio;
@@ -101,6 +102,7 @@ err:
 /* end mq_send2 */
 
 void Mymq_send(mqd_t mqd, const char *ptr, size_t len, unsigned int prio) {
-  if (mq_send(mqd, ptr, len, prio) == -1)
-    err_sys("mq_send error");
+  if (mq_send(mqd, ptr, len, prio) == -1) {
+    printf("mq_send error\n");
+  }
 }
