@@ -39,8 +39,8 @@ int mq_send(mqd_t mqd, const char *ptr, size_t len, unsigned int prio) {
       if (sigev->sigev_notify == SIGEV_SIGNAL) {
         /// sigqueue does not exit on macOS but it looks like it is enough if we
         /// just send a signal with kill to make simple tests pass.
-        /// NASA CFS is not using mq_notify so this very well can be considered
-        /// an unused branch.
+        /// If a user does not use mq_notify this can be considered an unused
+        /// branch.
         /// sigqueue(mqhdr->mqh_pid, sigev->sigev_signo, sigev->sigev_value);
         kill(mqhdr->mqh_pid, sigev->sigev_signo);
       }
