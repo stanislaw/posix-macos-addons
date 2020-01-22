@@ -62,15 +62,15 @@ TEST_F(NotificationTest, 01_registrationOnlyPossibleOnce) {
 
   sigev.sigev_notify = SIGEV_SIGNAL;
   sigev.sigev_signo = SIGUSR1;
-  Mymq_notify(mqd, &sigev);
+  assert(mq_notify(mqd, &sigev) == 0);
 
   rc = mq_notify(mqd, &sigev);
   ASSERT_EQ(rc, -1);
   ASSERT_EQ(errno, EBUSY);
 
   /* now unregister, then reregister */
-  Mymq_notify(mqd, NULL);
-  Mymq_notify(mqd, &sigev);
+  assert(mq_notify(mqd, NULL) == 0);
+  assert(mq_notify(mqd, &sigev) == 0);
 
   /* verify we cannot register twice */
   rc = mq_notify(mqd, &sigev);
@@ -89,7 +89,7 @@ TEST_F(NotificationTest, 02_registrationOnlyPossibleOnce_childCannotRegister) {
 
   sigev.sigev_notify = SIGEV_SIGNAL;
   sigev.sigev_signo = SIGUSR1;
-  Mymq_notify(mqd, &sigev);
+  assert(mq_notify(mqd, &sigev) == 0);
 
   pid_t childpid = fork();
   if ((childpid) == -1) {
@@ -132,25 +132,25 @@ TEST_F(NotificationTest, 03_sendAMessageResultsInSIGUSR1_butOnlyOnce) {
   sigev.sigev_notify = SIGEV_SIGNAL;
   sigev.sigev_signo = SIGUSR1;
   Signal(SIGUSR1, sig_usr1);
-  Mymq_notify(mqd, &sigev);
+  assert(mq_notify(mqd, &sigev) == 0);
 
   sigusr1 = 0;
 
   /// Send a message and verify SIGUSR1 is delivered.
-  Mymq_send(mqd, msg5, 5, 5);
+  mq_send(mqd, msg5, 5, 5);
   sleep(1);
 
   ASSERT_EQ(sigusr1, 1);
 
-  rc = Mymq_receive(mqd, msg, attr.mq_msgsize, &prio);
+  rc = mq_receive(mqd, msg, attr.mq_msgsize, &prio);
   ASSERT_EQ(rc, 5);
   ASSERT_EQ(prio, 5);
 
   /// Send another and make certain another signal is not sent.
-  Mymq_send(mqd, msg2, 2, 2);
+  mq_send(mqd, msg2, 2, 2);
   sleep(1);
   ASSERT_EQ(sigusr1, 1);
-  rc = Mymq_receive(mqd, msg, attr.mq_msgsize, &prio);
+  rc = mq_receive(mqd, msg, attr.mq_msgsize, &prio);
   ASSERT_EQ(rc, 2);
   ASSERT_EQ(prio, 2);
 
@@ -175,7 +175,7 @@ TEST_F(NotificationTest, 04_USR1_is_not_delivered_if_blocked_by_receive) {
   sigev.sigev_notify = SIGEV_SIGNAL;
   sigev.sigev_signo = SIGUSR1;
   Signal(SIGUSR1, sig_usr1);
-  Mymq_notify(mqd, &sigev);
+  mq_notify(mqd, &sigev);
 
   sigusr1 = 0;
 
@@ -187,7 +187,7 @@ TEST_F(NotificationTest, 04_USR1_is_not_delivered_if_blocked_by_receive) {
   if (childpid == 0) {
     int rc;
     /// Child calls mq_receive, which prevents notification.
-    if ((rc = Mymq_receive(mqd, msg, attr.mq_msgsize, &prio)) != 6) {
+    if ((rc = mq_receive(mqd, msg, attr.mq_msgsize, &prio)) != 6) {
       printf("mq_receive returned %d, expected 6\n", rc);
     }
     if (prio != 6) {
@@ -197,7 +197,7 @@ TEST_F(NotificationTest, 04_USR1_is_not_delivered_if_blocked_by_receive) {
   }
 
   sleep(2); /* let child block in mq_receive() */
-  Mymq_send(mqd, msg6, 6, 6);
+  mq_send(mqd, msg6, 6, 6);
 
   int exit_status_raw;
   while (waitpid(childpid, &exit_status_raw, 0) == -1) {

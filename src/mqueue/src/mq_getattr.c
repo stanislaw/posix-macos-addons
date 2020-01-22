@@ -32,11 +32,3 @@ mq_getattr(mqd_t mqd, struct mq_attr *mqstat)
 	return(0);
 }
 /* end mq_getattr */
-
-void
-Mymq_getattr(mqd_t mqd, struct mq_attr *mqstat)
-{
-  if (mq_getattr(mqd, mqstat) == -1) {
-    printf("mq_getattr error\n");
-  }
-}

@@ -113,13 +113,3 @@ mymq_wait_thread(void *arg)
 	return(NULL);
 }
 /* end mymq_recv_wait */
-
-ssize_t
-Mymq_receive(mymqd_t mqd, char *ptr, size_t len, unsigned int *priop)
-{
-	ssize_t	n;
-
-	if ( (n = mymq_receive(mqd, ptr, len, priop)) == -1)
-		err_sys("mymq_receive error");
-	return(n);
-}

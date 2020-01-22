@@ -40,13 +40,3 @@ mq_setattr(mqd_t mqd, const struct mq_attr *mqstat,
 	pthread_mutex_unlock(&mqhdr->mqh_lock);
 	return(0);
 }
-/* end mq_setattr */
-
-void
-Mymq_setattr(mqd_t mqd, const struct mq_attr *mqstat,
-			 struct mq_attr *omqstat)
-{
-	if (mq_setattr(mqd, mqstat, omqstat) == -1) {
-        printf("mq_setattr error\n");
-    }
-}

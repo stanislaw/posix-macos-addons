@@ -67,15 +67,6 @@ ssize_t mq_timedreceive(mqd_t mqdes, char *msg_ptr,
                         size_t msg_len, unsigned *msg_prio,
                         const struct timespec *abs_timeout);
 
-/* 4and the corresponding wrapper functions */
-void Mymq_close(mqd_t);
-void Mymq_getattr(mqd_t, struct mq_attr *);
-void Mymq_notify(mqd_t, const struct sigevent *);
-ssize_t Mymq_receive(mqd_t, char *, size_t, unsigned int *);
-void Mymq_send(mqd_t, const char *, size_t, unsigned int);
-void Mymq_setattr(mqd_t, const struct mq_attr *, struct mq_attr *);
-void Mymq_unlink(const char *name);
-
 #ifdef __cplusplus
 }
 #endif

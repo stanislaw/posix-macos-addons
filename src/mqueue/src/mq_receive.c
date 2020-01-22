@@ -74,13 +74,3 @@ err:
   return (-1);
 }
 /* end mq_receive2 */
-
-ssize_t Mymq_receive(mqd_t mqd, char *ptr, size_t len, unsigned int *priop) {
-  ssize_t n;
-
-  if ((n = mq_receive(mqd, ptr, len, priop)) == -1) {
-    printf("mq_receive error TODO\n");
-  }
-
-  return (n);
-}

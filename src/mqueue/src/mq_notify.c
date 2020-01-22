@@ -43,9 +43,3 @@ err:
   return (-1);
 }
 /* end mq_notify */
-
-void Mymq_notify(mqd_t mqd, const struct sigevent *notification) {
-  if (mq_notify(mqd, notification) == -1) {
-    printf("mq_notify error");
-  }
-}
