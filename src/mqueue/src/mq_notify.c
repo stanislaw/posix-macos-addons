@@ -42,4 +42,3 @@ err:
   pthread_mutex_unlock(&mqhdr->mqh_lock);
   return (-1);
 }
-/* end mq_notify */

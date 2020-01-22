@@ -34,7 +34,7 @@ struct mq_hdr {
 /* one mymsg_hdr{} at the front of each message in the mapped file */
 struct mymsg_hdr {
   long msg_next; /* index of next on linked list */
-  /* 4msg_next must be first member in struct */
+  /* msg_next must be first member in struct */
   ssize_t msg_len; /* actual length */
   unsigned int msg_prio; /* priority */
 };

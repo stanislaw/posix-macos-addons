@@ -55,8 +55,6 @@ ssize_t mq_timedreceive(mqd_t mqd,
     }
     mqhdr->mqh_nwait--;
   }
-  /* end mq_receive1 */
-  /* include mq_receive2 */
 
   if ((index = mqhdr->mqh_head) == 0) {
     printf("mq_receive: curmsgs = %ld; head = 0\n", attr->mq_curmsgs);
@@ -69,11 +67,11 @@ ssize_t mq_timedreceive(mqd_t mqd,
   if (priop != NULL)
     *priop = msghdr->msg_prio;
 
-  /* 4just-read message goes to front of free list */
+  /* just-read message goes to front of free list */
   msghdr->msg_next = mqhdr->mqh_free;
   mqhdr->mqh_free = index;
 
-  /* 4wake up anyone blocked in mq_send waiting for room */
+  /* wake up anyone blocked in mq_send waiting for room */
   if (attr->mq_curmsgs == attr->mq_maxmsg) {
     assert(pthread_cond_signal(&mqhdr->mqh_wait) == 0);
   }

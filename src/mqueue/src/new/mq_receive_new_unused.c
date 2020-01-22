@@ -34,7 +34,7 @@ ssize_t mq_receive(mqd_t mqd, char *ptr, size_t maxlen, unsigned int *priop) {
       errno = EAGAIN;
       goto err;
     }
-    /* 4wait for a message to be placed onto queue */
+    /* wait for a message to be placed onto queue */
     if ((rc = mq_recv_wait(mqhdr)) != 0) {
       errno = rc;
       goto err;
@@ -52,11 +52,11 @@ ssize_t mq_receive(mqd_t mqd, char *ptr, size_t maxlen, unsigned int *priop) {
   if (priop != NULL)
     *priop = msghdr->msg_prio;
 
-  /* 4just read message goes to front of free list */
+  /* just read message goes to front of free list */
   msghdr->msg_next = mqhdr->mqh_free;
   mqhdr->mqh_free = index;
 
-  /* 4wake up anyone blocked in mq_send waiting for room */
+  /* wake up anyone blocked in mq_send waiting for room */
   if (attr->mq_curmsgs == attr->mq_maxmsg)
     pthread_cond_signal(&mqhdr->mqh_wait);
   attr->mq_curmsgs--;
@@ -68,9 +68,7 @@ err:
   pthread_mutex_unlock(&mqhdr->mqh_lock);
   return (-1);
 }
-/* end mq_receive */
 
-/* include mq_recv_wait */
 static void *mq_wait_thread(void *);
 static int pipefd[2];
 
@@ -86,7 +84,7 @@ static int mq_recv_wait(struct mq_hdr *mqhdr) {
     close(pipefd[1]);
     return (rc);
   }
-  /* 4read returns 0 if queue nonempty, else -1 with errno set */
+  /* read returns 0 if queue nonempty, else -1 with errno set */
   if ((rc = read(pipefd[0], &c, 1)) != 0)
     rc = errno;
   close(pipefd[0]);
@@ -107,4 +105,3 @@ static void *mq_wait_thread(void *arg) {
   close(pipefd[1]); /* queue not empty, close write end of pipe */
   return (NULL);
 }
-/* end mq_recv_wait */

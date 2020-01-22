@@ -32,4 +32,3 @@ int mq_close(mqd_t mqd) {
   free(mqinfo);
   return (0);
 }
-/* end mq_close */
