@@ -100,9 +100,3 @@ err:
   return (-1);
 }
 /* end mq_send2 */
-
-void Mymq_send(mqd_t mqd, const char *ptr, size_t len, unsigned int prio) {
-  if (mq_send(mqd, ptr, len, prio) == -1) {
-    printf("mq_send error\n");
-  }
-}

@@ -9,9 +9,3 @@ int mq_unlink(const char *pathname) {
   return(0);
 }
 
-void
-Mymq_unlink(const char *pathname) {
-  if (mq_unlink(pathname) == -1) {
-    printf("mymq_unlink error\n");
-  }
-}

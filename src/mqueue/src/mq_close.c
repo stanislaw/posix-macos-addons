@@ -33,8 +33,3 @@ int mq_close(mqd_t mqd) {
   return (0);
 }
 /* end mq_close */
-
-void Mymq_close(mqd_t mqd) {
-  if (mq_close(mqd) == -1)
-    printf("mq_close error\n");
-}

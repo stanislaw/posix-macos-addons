@@ -54,14 +54,14 @@ TEST_F(QueueTest, 01_gettingDefaultAttributes) {
     mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, NULL);
   ASSERT_NE(mqd, (mqd_t)-1);
 
-  Mymq_getattr(mqd, &info);
+  assert(mq_getattr(mqd, &info) == 0);
 
   ASSERT_EQ(info.mq_maxmsg, 128);
   ASSERT_EQ(info.mq_msgsize, 1024);
   ASSERT_EQ(info.mq_flags, 0);
   ASSERT_EQ(info.mq_curmsgs, 0);
 
-  Mymq_close(mqd);
+  assert(mq_close(mqd) == 0);
 }
 
 TEST_F(QueueTest, 02_when_opening_closing_reopening_it_must_exist) {
@@ -85,7 +85,7 @@ TEST_F(QueueTest, 03_creating_with_attributes) {
     mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
   ASSERT_NE(mqd, (mqd_t)-1);
 
-  Mymq_getattr(mqd, &info);
+  assert(mq_getattr(mqd, &info) == 0);
 
   ASSERT_EQ(info.mq_maxmsg, 4);
   ASSERT_EQ(info.mq_msgsize, 7);
@@ -99,7 +99,7 @@ TEST_F(QueueTest, 04_sending_message_too_long) {
     mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, NULL);
   ASSERT_NE(mqd, (mqd_t)-1);
 
-  Mymq_send(mqd, msg1, 1, 1);
+  mq_send(mqd, msg1, 1, 1);
   ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
 
   /// TODO: Why is this? Compare to 05_sending below...
@@ -116,8 +116,8 @@ TEST_F(QueueTest, 05_sending) {
     mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
   ASSERT_NE(mqd, (mqd_t)-1);
 
-  Mymq_send(mqd, msg1, 1, 1);
-  ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+  mq_send(mqd, msg1, 1, 1);
+  ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
 
   ASSERT_EQ(rc, 1);
   ASSERT_EQ(prio, 1);
@@ -132,8 +132,8 @@ TEST_F(QueueTest, 06_sending_0bytes) {
     mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
   ASSERT_NE(mqd, (mqd_t)-1);
 
-  Mymq_send(mqd, msg1, 0, 0);
-  ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+  mq_send(mqd, msg1, 0, 0);
+  ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
 
   ASSERT_EQ(rc, 0);
   ASSERT_EQ(prio, 0);
@@ -148,17 +148,17 @@ TEST_F(QueueTest, 07_sending_two_receiving_in_reverse_order) {
     mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
   ASSERT_NE(mqd, (mqd_t)-1);
 
-  Mymq_send(mqd, msg1, 1, 1);
-  Mymq_send(mqd, msg2, 2, 2);
+  mq_send(mqd, msg1, 1, 1);
+  mq_send(mqd, msg2, 2, 2);
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 2);
     ASSERT_EQ(prio, 2);
   }
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 1);
     ASSERT_EQ(prio, 1);
   }
@@ -173,24 +173,24 @@ TEST_F(QueueTest, 08_sending_three_receiving_in_reverse_order) {
     mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
   ASSERT_NE(mqd, (mqd_t)-1);
 
-  Mymq_send(mqd, msg1, 1, 1);
-  Mymq_send(mqd, msg2, 2, 2);
-  Mymq_send(mqd, msg3, 3, 3);
+  mq_send(mqd, msg1, 1, 1);
+  mq_send(mqd, msg2, 2, 2);
+  mq_send(mqd, msg3, 3, 3);
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 3);
     ASSERT_EQ(prio, 3);
   }
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 2);
     ASSERT_EQ(prio, 2);
   }
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 1);
     ASSERT_EQ(prio, 1);
   }
@@ -205,31 +205,31 @@ TEST_F(QueueTest, 09_sending_four_receiving_in_reverse_order) {
     mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
   ASSERT_NE(mqd, (mqd_t)-1);
 
-  Mymq_send(mqd, msg1, 1, 1);
-  Mymq_send(mqd, msg2, 2, 2);
-  Mymq_send(mqd, msg3, 3, 3);
-  Mymq_send(mqd, msg3, 4, 4);
+  mq_send(mqd, msg1, 1, 1);
+  mq_send(mqd, msg2, 2, 2);
+  mq_send(mqd, msg3, 3, 3);
+  mq_send(mqd, msg3, 4, 4);
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 4);
     ASSERT_EQ(prio, 4);
   }
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 3);
     ASSERT_EQ(prio, 3);
   }
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 2);
     ASSERT_EQ(prio, 2);
   }
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 1);
     ASSERT_EQ(prio, 1);
   }
@@ -244,31 +244,31 @@ TEST_F(QueueTest, 10_send_two_receive_in_order) {
     mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
   ASSERT_NE(mqd, (mqd_t)-1);
 
-  Mymq_send(mqd, msg3, 4, 4);
-  Mymq_send(mqd, msg3, 3, 3);
-  Mymq_send(mqd, msg2, 2, 2);
-  Mymq_send(mqd, msg1, 1, 1);
+  mq_send(mqd, msg3, 4, 4);
+  mq_send(mqd, msg3, 3, 3);
+  mq_send(mqd, msg2, 2, 2);
+  mq_send(mqd, msg1, 1, 1);
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 4);
     ASSERT_EQ(prio, 4);
   }
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 3);
     ASSERT_EQ(prio, 3);
   }
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 2);
     ASSERT_EQ(prio, 2);
   }
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 1);
     ASSERT_EQ(prio, 1);
   }
@@ -283,36 +283,36 @@ TEST_F(QueueTest, 11_writing_and_closing_reopening_and_reading) {
     mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
   ASSERT_NE(mqd, (mqd_t)-1);
 
-  Mymq_send(mqd, msg3, 4, 4);
-  Mymq_send(mqd, msg3, 3, 3);
-  Mymq_send(mqd, msg2, 2, 2);
-  Mymq_send(mqd, msg1, 1, 1);
+  mq_send(mqd, msg3, 4, 4);
+  mq_send(mqd, msg3, 3, 3);
+  mq_send(mqd, msg2, 2, 2);
+  mq_send(mqd, msg1, 1, 1);
 
-  Mymq_close(mqd);
+  assert(mq_close(mqd) == 0);
 
   mqd = mq_open(message_queue_name, O_RDWR | O_NONBLOCK, FILE_MODE, &attr);
   ASSERT_NE(mqd, (mqd_t)-1);
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 4);
     ASSERT_EQ(prio, 4);
   }
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 3);
     ASSERT_EQ(prio, 3);
   }
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 2);
     ASSERT_EQ(prio, 2);
   }
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 1);
     ASSERT_EQ(prio, 1);
   }
@@ -327,14 +327,14 @@ TEST_F(QueueTest, 12_non_blocking_read) {
     mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
   ASSERT_NE(mqd, (mqd_t)-1);
 
-  Mymq_send(mqd, msg3, 4, 4);
-  Mymq_close(mqd);
+  mq_send(mqd, msg3, 4, 4);
+  assert(mq_close(mqd) == 0);
 
   mqd = mq_open(message_queue_name, O_RDWR | O_NONBLOCK, FILE_MODE, &attr);
   ASSERT_NE(mqd, (mqd_t)-1);
 
   {
-    ssize_t rc = Mymq_receive(mqd, msg, BUFFLEN, &prio);
+    ssize_t rc = mq_receive(mqd, msg, BUFFLEN, &prio);
     ASSERT_EQ(rc, 4);
     ASSERT_EQ(prio, 4);
   }
@@ -358,10 +358,10 @@ TEST_F(QueueTest, 13_non_blocking_send) {
                 &attr);
   ASSERT_NE(mqd, (mqd_t)-1);
 
-  Mymq_send(mqd, msg3, 4, 4);
-  Mymq_send(mqd, msg3, 3, 3);
-  Mymq_send(mqd, msg2, 2, 2);
-  Mymq_send(mqd, msg1, 1, 1);
+  mq_send(mqd, msg3, 4, 4);
+  mq_send(mqd, msg3, 3, 3);
+  mq_send(mqd, msg2, 2, 2);
+  mq_send(mqd, msg1, 1, 1);
 
   rc = mq_send(mqd, msg5, 5, 5);
   ASSERT_EQ(rc, -1);

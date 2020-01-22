@@ -52,19 +52,19 @@ TEST_F(IPCTest, 01_parent_sends_to_child) {
     sleep(2); /* let parent send two messages */
 
     unsigned int prio;
-    int rc = Mymq_receive(mqd, msg, attr.mq_msgsize, &prio);
+    int rc = mq_receive(mqd, msg, attr.mq_msgsize, &prio);
     assert(rc == 3);
     assert(prio == 3);
 
-    rc = Mymq_receive(mqd, msg, attr.mq_msgsize, &prio);
+    rc = mq_receive(mqd, msg, attr.mq_msgsize, &prio);
     assert(rc == 1);
     assert(prio == 1);
 
     exit(CUSTOM_SUCCESS_EXIT_CODE);
   }
 
-  Mymq_send(mqd, msg1, 1, 1);
-  Mymq_send(mqd, msg3, 3, 3);
+  assert(mq_send(mqd, msg1, 1, 1) == 0);
+  assert(mq_send(mqd, msg3, 3, 3) == 0);
 
   int exit_status_raw;
   while (waitpid(child_pid, &exit_status_raw, 0) == -1) {
@@ -90,24 +90,24 @@ TEST_F(IPCTest, 02_child_sends_to_parent) {
     assert(0);
   }
   if (child_pid == 0) {
-    Mymq_send(mqd, msg3, 3, 3);
-    Mymq_send(mqd, msg5, 5, 5);
-    Mymq_send(mqd, msg1, 1, 1);
+    mq_send(mqd, msg3, 3, 3);
+    mq_send(mqd, msg5, 5, 5);
+    mq_send(mqd, msg1, 1, 1);
     exit(CUSTOM_SUCCESS_EXIT_CODE);
   }
   sleep(2); /* let child send 3 messages */
 
   int rc;
   unsigned int prio;
-  rc = Mymq_receive(mqd, msg, attr.mq_msgsize, &prio);
+  rc = mq_receive(mqd, msg, attr.mq_msgsize, &prio);
   ASSERT_EQ(rc, 5);
   ASSERT_EQ(prio, 5);
 
-  rc = Mymq_receive(mqd, msg, attr.mq_msgsize, &prio);
+  rc = mq_receive(mqd, msg, attr.mq_msgsize, &prio);
   ASSERT_EQ(rc, 3);
   ASSERT_EQ(prio, 3);
 
-  rc = Mymq_receive(mqd, msg, attr.mq_msgsize, &prio);
+  rc = mq_receive(mqd, msg, attr.mq_msgsize, &prio);
   ASSERT_EQ(rc, 1);
   ASSERT_EQ(prio, 1);
 
