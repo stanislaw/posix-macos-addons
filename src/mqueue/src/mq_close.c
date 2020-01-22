@@ -1,6 +1,7 @@
 #include "mqueue.h"
 
 #include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/mman.h>
 
@@ -35,5 +36,5 @@ int mq_close(mqd_t mqd) {
 
 void Mymq_close(mqd_t mqd) {
   if (mq_close(mqd) == -1)
-    err_sys("mq_close error");
+    printf("mq_close error\n");
 }

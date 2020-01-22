@@ -2,6 +2,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <stdio.h>
 
 int
 mq_setattr(mqd_t mqd, const struct mq_attr *mqstat,
@@ -45,6 +46,7 @@ void
 Mymq_setattr(mqd_t mqd, const struct mq_attr *mqstat,
 			 struct mq_attr *omqstat)
 {
-	if (mq_setattr(mqd, mqstat, omqstat) == -1)
-		err_sys("mq_setattr error");
+	if (mq_setattr(mqd, mqstat, omqstat) == -1) {
+        printf("mq_setattr error\n");
+    }
 }

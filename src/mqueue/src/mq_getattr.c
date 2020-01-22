@@ -1,6 +1,7 @@
 #include "mqueue.h"
 
 #include <errno.h>
+#include <stdio.h>
 
 int
 mq_getattr(mqd_t mqd, struct mq_attr *mqstat)
@@ -35,6 +36,7 @@ mq_getattr(mqd_t mqd, struct mq_attr *mqstat)
 void
 Mymq_getattr(mqd_t mqd, struct mq_attr *mqstat)
 {
-	if (mq_getattr(mqd, mqstat) == -1)
-		err_sys("mq_getattr error");
+  if (mq_getattr(mqd, mqstat) == -1) {
+    printf("mq_getattr error\n");
+  }
 }

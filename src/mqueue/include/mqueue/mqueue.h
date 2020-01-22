@@ -76,12 +76,6 @@ void Mymq_send(mqd_t, const char *, size_t, unsigned int);
 void Mymq_setattr(mqd_t, const struct mq_attr *, struct mq_attr *);
 void Mymq_unlink(const char *name);
 
-void err_dump(const char *, ...);
-void err_msg(const char *, ...);
-void err_quit(const char *, ...);
-void err_ret(const char *, ...);
-void err_sys(const char *, ...);
-
 #ifdef __cplusplus
 }
 #endif
