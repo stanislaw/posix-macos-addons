@@ -37,14 +37,12 @@ ssize_t mq_receive(mqd_t mqd, char *ptr, size_t maxlen, unsigned int *priop) {
       errno = EAGAIN;
       goto err;
     }
-    /* 4wait for a message to be placed onto queue */
+    /* wait for a message to be placed onto queue */
     mqhdr->mqh_nwait++;
     while (attr->mq_curmsgs == 0)
       pthread_cond_wait(&mqhdr->mqh_wait, &mqhdr->mqh_lock);
     mqhdr->mqh_nwait--;
   }
-  /* end mq_receive1 */
-  /* include mq_receive2 */
 
   if ((index = mqhdr->mqh_head) == 0) {
     printf("mq_receive: curmsgs = %ld; head = 0\n", attr->mq_curmsgs);
@@ -57,11 +55,11 @@ ssize_t mq_receive(mqd_t mqd, char *ptr, size_t maxlen, unsigned int *priop) {
   if (priop != NULL)
     *priop = msghdr->msg_prio;
 
-  /* 4just-read message goes to front of free list */
+  /* just-read message goes to front of free list */
   msghdr->msg_next = mqhdr->mqh_free;
   mqhdr->mqh_free = index;
 
-  /* 4wake up anyone blocked in mq_send waiting for room */
+  /* wake up anyone blocked in mq_send waiting for room */
   if (attr->mq_curmsgs == attr->mq_maxmsg)
     pthread_cond_signal(&mqhdr->mqh_wait);
   attr->mq_curmsgs--;
@@ -73,4 +71,3 @@ err:
   pthread_mutex_unlock(&mqhdr->mqh_lock);
   return (-1);
 }
-/* end mq_receive2 */

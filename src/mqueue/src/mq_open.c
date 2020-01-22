@@ -40,7 +40,7 @@ again:
     attr = va_arg(ap, struct mq_attr *);
     va_end(ap);
 
-    /* 4open and specify O_EXCL and user-execute */
+    /* open and specify O_EXCL and user-execute */
     fd = open(pathname, oflag | O_EXCL | O_RDWR, mode | S_IXUSR);
     if (fd < 0) {
       if (errno == EEXIST && (oflag & O_EXCL) == 0)
@@ -58,9 +58,8 @@ again:
         goto err;
       }
     }
-    /* end mq_open1 */
-    /* include mq_open2 */
-    /* 4calculate and set the file size */
+
+    /* calculate and set the file size */
     msgsize = MSGSIZE(attr->mq_msgsize);
     filesize = sizeof(struct mq_hdr) +
       (attr->mq_maxmsg * (sizeof(struct mymsg_hdr) + msgsize));
@@ -69,12 +68,12 @@ again:
     if (write(fd, "", 1) == -1)
       goto err;
 
-    /* 4memory map the file */
+    /* memory map the file */
     mptr = mmap(NULL, filesize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     if (mptr == MAP_FAILED)
       goto err;
 
-    /* 4allocate one mq_info{} for the queue */
+    /* allocate one mq_info{} for the queue */
     /* *INDENT-OFF* */
     if ((mqinfo = malloc(sizeof(struct mq_info))) == NULL)
       goto err;
@@ -83,8 +82,8 @@ again:
     mqinfo->mqi_magic = MQI_MAGIC;
     mqinfo->mqi_flags = nonblock;
 
-    /* 4initialize header at beginning of file */
-    /* 4create free list with all messages on it */
+    /* initialize header at beginning of file */
+    /* create free list with all messages on it */
     mqhdr->mqh_attr.mq_flags = 0;
     mqhdr->mqh_attr.mq_maxmsg = attr->mq_maxmsg;
     mqhdr->mqh_attr.mq_msgsize = attr->mq_msgsize;
@@ -102,7 +101,7 @@ again:
     msghdr = (struct mymsg_hdr *)&mptr[index];
     msghdr->msg_next = 0; /* end of free list */
 
-    /* 4initialize mutex & condition variable */
+    /* initialize mutex & condition variable */
     if ((i = pthread_mutexattr_init(&mattr)) != 0)
       goto pthreaderr;
     pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_SHARED);
@@ -119,23 +118,22 @@ again:
     if (i != 0)
       goto pthreaderr;
 
-    /* 4initialization complete, turn off user-execute bit */
+    /* initialization complete, turn off user-execute bit */
     if (fchmod(fd, mode) == -1)
       goto err;
     close(fd);
     return ((mqd_t)mqinfo);
   }
-/* end mq_open2 */
-/* include mq_open3 */
+
 exists:
-  /* 4open the file then memory map */
+  /* open the file then memory map */
   if ((fd = open(pathname, O_RDWR)) < 0) {
     if (errno == ENOENT && (oflag & O_CREAT))
       goto again;
     goto err;
   }
 
-  /* 4make certain initialization is complete */
+  /* make certain initialization is complete */
   for (i = 0; i < MAX_TRIES; i++) {
     if (stat(pathname, &statbuff) == -1) {
       if (errno == ENOENT && (oflag & O_CREAT)) {
@@ -159,20 +157,19 @@ exists:
     goto err;
   close(fd);
 
-  /* 4allocate one mq_info{} for each open */
-  /* *INDENT-OFF* */
+  /* allocate one mq_info{} for each open */
   if ((mqinfo = malloc(sizeof(struct mq_info))) == NULL)
     goto err;
-  /* *INDENT-ON* */
   mqinfo->mqi_hdr = (struct mq_hdr *)mptr;
   mqinfo->mqi_magic = MQI_MAGIC;
   mqinfo->mqi_flags = nonblock;
   return ((mqd_t)mqinfo);
-/* $$.bp$$ */
+
 pthreaderr:
   errno = i;
+
 err:
-  /* 4don't let following function calls change errno */
+  /* don't let following function calls change errno */
   save_errno = errno;
   if (created)
     unlink(pathname);

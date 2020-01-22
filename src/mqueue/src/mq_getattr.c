@@ -31,4 +31,3 @@ mq_getattr(mqd_t mqd, struct mq_attr *mqstat)
 	pthread_mutex_unlock(&mqhdr->mqh_lock);
 	return(0);
 }
-/* end mq_getattr */
