@@ -1,16 +1,21 @@
 #include "mqueue.h"
 
+#include "mqueue-internal.h"
+
+#include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <string.h>
 
 #define MAX_TRIES 10 /* for waiting for initialization */
 
 /// TODO: CHECK THIS
-#define	va_mode_t	int
+#define va_mode_t int
 
 struct mq_attr defattr = {0, 128, 1024, 0};
 
@@ -33,6 +38,13 @@ mqd_t mq_open(const char *pathname, int oflag, ...) {
   oflag &= ~O_NONBLOCK;
   mptr = (int8_t *)MAP_FAILED;
   mqinfo = NULL;
+
+  char fs_pathname[MQ_FS_NAME_MAX];
+  if (mq_get_fs_pathname(pathname, fs_pathname) == EINVAL) {
+    errno = EINVAL;
+    return ((mqd_t)-1);
+  };
+
 again:
   if (oflag & O_CREAT) {
     va_start(ap, oflag); /* init ap to final named argument */
@@ -41,7 +53,7 @@ again:
     va_end(ap);
 
     /* open and specify O_EXCL and user-execute */
-    fd = open(pathname, oflag | O_EXCL | O_RDWR, mode | S_IXUSR);
+    fd = open(fs_pathname, oflag | O_EXCL | O_RDWR, mode | S_IXUSR);
     if (fd < 0) {
       if (errno == EEXIST && (oflag & O_EXCL) == 0)
         goto exists; /* already exists, OK */
@@ -127,7 +139,7 @@ again:
 
 exists:
   /* open the file then memory map */
-  if ((fd = open(pathname, O_RDWR)) < 0) {
+  if ((fd = open(fs_pathname, O_RDWR)) < 0) {
     if (errno == ENOENT && (oflag & O_CREAT))
       goto again;
     goto err;
@@ -135,7 +147,7 @@ exists:
 
   /* make certain initialization is complete */
   for (i = 0; i < MAX_TRIES; i++) {
-    if (stat(pathname, &statbuff) == -1) {
+    if (stat(fs_pathname, &statbuff) == -1) {
       if (errno == ENOENT && (oflag & O_CREAT)) {
         close(fd);
         goto again;
@@ -172,7 +184,7 @@ err:
   /* don't let following function calls change errno */
   save_errno = errno;
   if (created)
-    unlink(pathname);
+    unlink(fs_pathname);
   if (mptr != MAP_FAILED)
     munmap(mptr, filesize);
   if (mqinfo != NULL)
@@ -181,4 +193,3 @@ err:
   errno = save_errno;
   return ((mqd_t)-1);
 }
-

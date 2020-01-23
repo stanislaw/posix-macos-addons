@@ -17,7 +17,7 @@ static char msg3[] = "333";
 //static char msg7[] = "7777777";
 //static char msg8[] = "88888888";
 
-static const char message_queue_name[] = "test_mqueue";
+static const char message_queue_name[] = "/test_mqueue";
 
 class MessageQueue_TimedSendReceive_Test : public ::testing::Test {
 protected:
@@ -42,6 +42,7 @@ TEST_F(MessageQueue_TimedSendReceive_Test, timedSend) {
   attr.mq_msgsize = 7;
 
   mqd = mq_open(message_queue_name, O_CREAT | O_EXCL | O_RDWR, FILE_MODE, &attr);
+  ASSERT_NE(mqd, (mqd_t)-1);
 
   assert(mq_send(mqd, msg1, 1, 1) == 0);
 
