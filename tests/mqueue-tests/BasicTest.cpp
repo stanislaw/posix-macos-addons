@@ -1,5 +1,7 @@
 #include "mqueue.h"
 
+#include "mqueue-internal.h"
+
 #include <gtest/gtest.h>
 
 #include <iostream>
@@ -30,7 +32,7 @@ Sigfunc *Signal(int signo, Sigfunc *func) /* for our signal() function */
   return (sigfunc);
 }
 
-static const char message_queue_name[] = "test_mqueue";
+static const char message_queue_name[] = "/test_mqueue";
 
 class QueueTest : public ::testing::Test {
 protected:
@@ -366,4 +368,20 @@ TEST_F(QueueTest, 13_non_blocking_send) {
   rc = mq_send(mqd, msg5, 5, 5);
   ASSERT_EQ(rc, -1);
   ASSERT_EQ(errno, EAGAIN);
+}
+
+TEST_F(QueueTest, 14_creatingAQueueNotStartingWithSlash) {
+  mqd =
+    mq_open("queue.1", O_CREAT | O_EXCL | O_RDWR, FILE_MODE, NULL);
+  ASSERT_EQ(mqd, (mqd_t)-1);
+  ASSERT_EQ(errno, EINVAL);
+}
+
+TEST_F(QueueTest, 15_mq_get_fs_pathname) {
+  char queue[] = "/queue1";
+  char fs_queue[128];
+
+  int result = mq_get_fs_pathname(queue, fs_queue);
+  ASSERT_EQ(result, 0);
+  ASSERT_EQ(strcmp(fs_queue, "/tmp/queue1"), 0);
 }

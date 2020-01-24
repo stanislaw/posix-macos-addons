@@ -30,7 +30,7 @@ static Sigfunc *Signal(int signo, Sigfunc *func) /* for our signal() function */
   return (sigfunc);
 }
 
-static const char message_queue_name[] = "test_mqueue";
+static const char message_queue_name[] = "/test_mqueue";
 
 static const int CUSTOM_SUCCESS_EXIT_CODE = 47;
 

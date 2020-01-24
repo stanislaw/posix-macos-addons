@@ -1,6 +1,7 @@
 set(SOURCES
   src/mq_close.c
   src/mq_getattr.c
+  src/mq_internal_fs.c
   src/mq_notify.c
   src/mq_open.c
   src/mq_receive.c

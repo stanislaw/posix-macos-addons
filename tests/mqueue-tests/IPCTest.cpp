@@ -17,7 +17,7 @@ static char msg5[] = "55555";
 //static char msg7[] = "7777777";
 //static char msg8[] = "88888888";
 
-static const char message_queue_name[] = "test_mqueue";
+static const char message_queue_name[] = "/test_mqueue";
 
 static const int CUSTOM_SUCCESS_EXIT_CODE = 47;
 
