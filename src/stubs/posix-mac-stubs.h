@@ -1,4 +1,10 @@
 #pragma once
 
-extern const int SIGRTMIN;
-extern const int SIGRTMAX;
+#include <sys/param.h>
+
+/// Warning: These are just stubs. They are not intended to be used.
+#ifndef SIGRTMIN
+#define SIGRTMIN (SIGUSR2 + 1)
+#define SIGRTMAX 60
+#endif
+

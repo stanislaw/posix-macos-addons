@@ -4,8 +4,6 @@
 #include <errno.h>
 #include <mach/clock_types.h>
 
-const int TIMER_ABSTIME = 1;
-
 void __timespec_diff(const struct timespec* lhs,
                      const struct timespec* rhs,
                      struct timespec* out) {

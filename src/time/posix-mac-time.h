@@ -6,7 +6,10 @@
 extern "C" {
 #endif
 
-extern const int TIMER_ABSTIME;
+#ifndef TIMER_ABSTIME
+/// We are not using this variable, so the value does not matter.
+#define TIMER_ABSTIME 12345
+#endif
 
 void __timespec_diff(const struct timespec* lhs,
                      const struct timespec* rhs,
