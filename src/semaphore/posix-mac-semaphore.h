@@ -21,6 +21,18 @@ int mac_sem_wait(mac_sem_t *psem);
 int mac_sem_timedwait(mac_sem_t *psem, const struct timespec *abstim);
 int mac_sem_getvalue(mac_sem_t *sem, int *sval);
 
+/// sem_* functions are available on macOS but they are deprecated.
+/// Additionally, the sem_timedwait() is not implemented on macOS.
+/// Redefining sem_* to mac_sem2_*.
+#define sem_t mac_sem_t
+#define sem_init mac_sem_init
+#define sem_destroy mac_sem_destroy
+#define sem_post mac_sem_post
+#define sem_wait mac_sem_wait
+#define sem_trywait mac_sem_trywait
+#define sem_timedwait mac_sem_timedwait
+#define sem_getvalue mac_sem_getvalue
+
 #ifdef __cplusplus
 }
 #endif
