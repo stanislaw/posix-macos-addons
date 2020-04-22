@@ -1,4 +1,4 @@
-#include "posix-mac-pthread.h"
+#include "posix-macos-pthread.h"
 
 int pthread_setschedprio(pthread_t thread, int prio) {
   struct sched_param param;

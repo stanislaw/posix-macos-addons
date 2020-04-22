@@ -26,7 +26,7 @@ target_link_libraries(tests-unit
   google-test
   pthread
 
-  posix-mac-addons
+  posix-macos-addons
 
   ${CMAKE_THREAD_LIBS_INIT}
 )

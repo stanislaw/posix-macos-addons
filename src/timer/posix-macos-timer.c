@@ -1,4 +1,4 @@
-#include "posix-mac-timer.h"
+#include "posix-macos-timer.h"
 
 #include <assert.h>
 #include <stdio.h>
