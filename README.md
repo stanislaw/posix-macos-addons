@@ -1,4 +1,4 @@
-# POSIX Mac Addons
+# POSIX addons for macOS
 
 This is a collection of the POSIX functions which are not available on macOS.
 
@@ -65,7 +65,7 @@ replacement for their real POSIX equivalents.
   the real POSIX equivalents.
 
 - The code is located in the `src` folder with every port in a subfolder. It
-  should be possible to use both full `posix-mac-addons` CMake project and each
+  should be possible to use both full `posix-macos-addons` CMake project and each
   and every of the sub-folders standalone.
 
 ## Contents
