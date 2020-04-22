@@ -1,4 +1,4 @@
-#include "posix-mac-pthread.h"
+#include "posix-macos-pthread.h"
 
 #include <gtest/gtest.h>
 

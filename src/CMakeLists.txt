@@ -5,15 +5,15 @@ add_subdirectory(time)
 add_subdirectory(timer)
 add_subdirectory(stubs)
 
-add_library(posix-mac-addons INTERFACE)
+add_library(posix-macos-addons INTERFACE)
 
-target_link_libraries(posix-mac-addons
+target_link_libraries(posix-macos-addons
   INTERFACE
   mqueue
-  posix-mac-pthread
-  posix-mac-semaphore
-  posix-mac-stubs
-  posix-mac-time
-  posix-mac-timer
+  posix-macos-pthread
+  posix-macos-semaphore
+  posix-macos-stubs
+  posix-macos-time
+  posix-macos-timer
   rt
 )
