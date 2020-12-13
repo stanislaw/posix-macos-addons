@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _POSIX_MACOS_SEMAPHORE2_H_
+#define _POSIX_MACOS_SEMAPHORE2_H_
 
 #include <dispatch/dispatch.h>
 
@@ -46,3 +47,5 @@ int mac_sem2_getvalue(mac_sem2_t *sem, int *sval);
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* _POSIX_MACOS_SEMAPHORE2_H_ */
