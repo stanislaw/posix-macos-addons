@@ -1,3 +1,6 @@
+#ifndef _POSIX_MACOS_PTHREAD_H_
+#define _POSIX_MACOS_PTHREAD_H_
+
 #include <pthread.h>
 
 #ifdef __cplusplus
@@ -11,3 +14,5 @@ int pthread_mutex_timedlock(pthread_mutex_t *mutex,
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* _POSIX_MACOS_PTHREAD_H_ */
