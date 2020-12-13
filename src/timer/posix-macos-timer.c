@@ -27,6 +27,10 @@ static dispatch_queue_t sync_queue() {
   return queue;
 }
 
+static long timespec_to_ns(const struct timespec *value) {
+  return value->tv_sec * NSEC_PER_SEC + value->tv_nsec;
+}
+
 int timer_create(clockid_t clockid, struct sigevent *sevp, timer_t *timerid) {
   assert(timerid != NULL);
 
@@ -80,11 +84,8 @@ int timer_settime(timer_t timerid,
 
   timer_entry *timer = &timer_storage.timers[timerid];
 
-  long value_ns =
-    new_value->it_value.tv_sec * NSEC_PER_SEC + new_value->it_value.tv_nsec;
-
-  long interval_ns = new_value->it_interval.tv_sec * NSEC_PER_SEC +
-    new_value->it_interval.tv_nsec;
+  int64_t value_ns = timespec_to_ns(&new_value->it_value);
+  int64_t interval_ns = timespec_to_ns(&new_value->it_interval);
 
   dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, value_ns);
   dispatch_source_set_timer(timer->source, start, interval_ns, 0);
