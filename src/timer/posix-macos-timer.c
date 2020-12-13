@@ -6,10 +6,16 @@
 
 #define TIMERS_MAX 100U
 
+typedef enum {
+  STOPPED = 0,
+  STARTED = 1
+} timer_state_t;
+
 typedef struct {
   dispatch_source_t source;
   dispatch_queue_t queue;
   dispatch_semaphore_t semaphore;
+  timer_state_t state;
 } timer_entry;
 
 typedef struct timer_storage_t {
@@ -41,6 +47,7 @@ int timer_create(clockid_t clockid, struct sigevent *sevp, timer_t *timerid) {
   });
 
   timer_entry *entry = &timer_storage.timers[new_timer_id];
+  entry->state = STOPPED;
 
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
@@ -64,6 +71,8 @@ int timer_create(clockid_t clockid, struct sigevent *sevp, timer_t *timerid) {
     dispatch_release(new_timer);
     dispatch_release(queue);
     dispatch_release(semaphore);
+
+    entry->state = STOPPED;
   });
 
   entry->queue = queue;
@@ -90,6 +99,23 @@ int timer_settime(timer_t timerid,
   dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, value_ns);
   dispatch_source_set_timer(timer->source, start, interval_ns, 0);
 
+  /// Setting up a timer that is already set happens in NASA cFS tests and this
+  /// results in:
+  /// 	movq   %rax, 0x368ad889(%rip)
+  ///	ud2
+  ///	leaq   0x28695(%rip), %rcx        ; "BUG IN CLIENT OF LIBDISPATCH: Over-resume of an inactive object"
+  ///
+  ///  * Dispatch objects can be suspended with dispatch_suspend(), which increments
+  ///  * an internal suspension count. dispatch_resume() is the inverse operation,
+  ///  * and consumes suspension counts. When the last suspension count is consumed,
+  ///  * blocks associated with the object will be invoked again.
+  ///  The not so nice solution is to introduce a state flag and use it for
+  ///  doing a suspend when the timer is already running.
+  if (timer->state != STARTED) {
+    timer->state = STARTED;
+  } else {
+    dispatch_suspend(timer->source);
+  }
   dispatch_resume(timer->source);
 
   return 0;
