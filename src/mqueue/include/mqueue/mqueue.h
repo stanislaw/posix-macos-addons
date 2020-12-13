@@ -1,3 +1,6 @@
+#ifndef _MQUEUE_H_
+#define _MQUEUE_H_
+
 #include <fcntl.h>
 #include <pthread.h>
 #include <signal.h>
@@ -72,3 +75,5 @@ ssize_t mq_timedreceive(mqd_t mqdes,
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* _MQUEUE_H_ */
