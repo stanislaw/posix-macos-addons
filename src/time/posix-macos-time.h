@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _POSIX_MACOS_TIME_H_
+#define _POSIX_MACOS_TIME_H_
 
 #include <time.h>
 
@@ -22,3 +23,5 @@ int clock_nanosleep(clockid_t clock_id, int flags,
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* _POSIX_MACOS_TIME_H_ */
