@@ -1,5 +1,5 @@
-#ifndef _MQUEUE_H_
-#define _MQUEUE_H_
+#ifndef _POSIX_MACOS_MQUEUE_H_
+#define _POSIX_MACOS_MQUEUE_H_
 
 #include <fcntl.h>
 #include <pthread.h>
@@ -76,4 +76,4 @@ ssize_t mq_timedreceive(mqd_t mqdes,
 }
 #endif
 
-#endif /* _MQUEUE_H_ */
+#endif /* _POSIX_MACOS_MQUEUE_H_ */

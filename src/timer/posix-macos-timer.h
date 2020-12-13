@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _POSIX_MACOS_TIMER_H_
+#define _POSIX_MACOS_TIMER_H_
 
 #include <signal.h>
 #include <time.h>
@@ -28,3 +29,5 @@ int timer_poll(timer_t timerid);
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* _POSIX_MACOS_TIMER_H_ */
