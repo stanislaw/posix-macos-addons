@@ -1,4 +1,5 @@
-#pragma once
+#ifndef _POSIX_MACOS_STUBS_H_
+#define _POSIX_MACOS_STUBS_H_
 
 #include <sys/param.h>
 
@@ -8,3 +9,4 @@
 #define SIGRTMAX 60
 #endif
 
+#endif /* _POSIX_MACOS_STUBS_H_ */
