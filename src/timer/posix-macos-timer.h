@@ -9,7 +9,9 @@
 extern "C" {
 #endif
 
-typedef uint8_t timer_t;
+#define CLOCK_DUMMY (clockid_t)(-1)
+
+typedef struct timer_instance_t *timer_t;
 
 struct itimerspec {
   struct timespec it_interval;  /* Timer interval */

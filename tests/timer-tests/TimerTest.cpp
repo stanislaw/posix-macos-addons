@@ -5,13 +5,6 @@
 #include <iostream>
 
 TEST(TimerTest, 01) {
-  struct timespec now;
-
-  assert(clock_gettime(CLOCK_REALTIME, &now) == 0);
-
-  struct timespec deadline;
-  clock_gettime(CLOCK_MONOTONIC, &deadline);
-
   struct itimerspec its;
   its.it_value.tv_sec = 0;
   its.it_value.tv_nsec = 0;
@@ -22,7 +15,7 @@ TEST(TimerTest, 01) {
 
   timer_t timerid;
 
-  if (timer_create(CLOCK_REALTIME, &dummy_sev, &timerid) == -1) {
+  if (timer_create(CLOCK_DUMMY, &dummy_sev, &timerid) == -1) {
     perror("timer_create");
     exit(1);
   }

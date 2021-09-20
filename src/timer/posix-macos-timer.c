@@ -11,43 +11,22 @@ typedef enum {
   STARTED = 1
 } timer_state_t;
 
-typedef struct {
+typedef struct timer_instance_t {
   dispatch_source_t source;
-  dispatch_queue_t queue;
   dispatch_semaphore_t semaphore;
   timer_state_t state;
-} timer_entry;
-
-typedef struct timer_storage_t {
-  timer_entry timers[TIMERS_MAX];
-  uint32_t count;
-} timer_storage_t;
-static timer_storage_t timer_storage = { .timers = {{0}}, .count = 0 };
-
-static dispatch_queue_t sync_queue() {
-  static dispatch_once_t guard;
-  static dispatch_queue_t queue;
-  dispatch_once(&guard, ^{
-    queue = dispatch_queue_create("timer sync queue", 0);
-  });
-  return queue;
-}
+} timer_instance_t;
 
 static long timespec_to_ns(const struct timespec *value) {
   return value->tv_sec * NSEC_PER_SEC + value->tv_nsec;
 }
 
 int timer_create(clockid_t clockid, struct sigevent *sevp, timer_t *timerid) {
+  assert(clockid == CLOCK_DUMMY &&
+         "Passing CLOCK_REALTIME or CLOCK_MONOTONIC has no effect. Use CLOCK_DUMMY.");
   assert(timerid != NULL);
 
-  __block timer_t new_timer_id;
-  dispatch_sync(sync_queue(), ^{
-    new_timer_id = timer_storage.count;
-    timer_storage.count++;
-  });
-
-  timer_entry *entry = &timer_storage.timers[new_timer_id];
-  entry->state = STOPPED;
+  timer_instance_t *timer_entry = malloc(sizeof(struct timer_instance_t));
 
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
@@ -76,14 +55,13 @@ int timer_create(clockid_t clockid, struct sigevent *sevp, timer_t *timerid) {
     dispatch_release(queue);
     dispatch_release(semaphore);
 
-    entry->state = STOPPED;
+    timer_entry->state = STOPPED;
   });
 
-  entry->queue = queue;
-  entry->source = new_timer;
-  entry->semaphore = semaphore;
+  timer_entry->source = new_timer;
+  timer_entry->semaphore = semaphore;
 
-  *timerid = new_timer_id;
+  *timerid = timer_entry;
 
   return 0;
 }
@@ -92,16 +70,14 @@ int timer_settime(timer_t timerid,
                   int flags,
                   const struct itimerspec *new_value,
                   struct itimerspec *old_value) {
-  assert(timerid < TIMERS_MAX);
+  assert(timerid);
   assert(flags == 0 && "No flags are supported");
-
-  timer_entry *timer = &timer_storage.timers[timerid];
 
   int64_t value_ns = timespec_to_ns(&new_value->it_value);
   int64_t interval_ns = timespec_to_ns(&new_value->it_interval);
 
   dispatch_time_t start = dispatch_time(DISPATCH_TIME_NOW, value_ns);
-  dispatch_source_set_timer(timer->source, start, interval_ns, 0);
+  dispatch_source_set_timer(timerid->source, start, interval_ns, 0);
 
   /// Setting up a timer that is already set happens in NASA cFS tests and this
   /// results in:
@@ -115,27 +91,25 @@ int timer_settime(timer_t timerid,
   ///  * blocks associated with the object will be invoked again.
   ///  The not so nice solution is to introduce a state flag and use it for
   ///  doing a suspend when the timer is already running.
-  if (timer->state != STARTED) {
-    timer->state = STARTED;
+  if (timerid->state != STARTED) {
+    timerid->state = STARTED;
   } else {
-    dispatch_suspend(timer->source);
+    dispatch_suspend(timerid->source);
   }
-  dispatch_resume(timer->source);
+  dispatch_resume(timerid->source);
 
   return 0;
 }
 
 int timer_delete(timer_t timerid) {
-  timer_entry *timer = &timer_storage.timers[timerid];
-  dispatch_source_cancel(timer->source);
+  assert(timerid);
+  dispatch_source_cancel(timerid->source);
+  free(timerid);
   return 0;
 }
 
 int timer_poll(timer_t timerid) {
-  assert(timerid < TIMERS_MAX);
-
-  timer_entry *timer = &timer_storage.timers[timerid];
-  dispatch_semaphore_wait(timer->semaphore, DISPATCH_TIME_FOREVER);
-
+  assert(timerid);
+  dispatch_semaphore_wait(timerid->semaphore, DISPATCH_TIME_FOREVER);
   return 0;
 }
