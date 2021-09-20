@@ -13,20 +13,16 @@ TEST(TimerTest, 01) {
   clock_gettime(CLOCK_MONOTONIC, &deadline);
 
   struct itimerspec its;
-  long long freq_nanosecs = NSEC_PER_SEC / 10;
-  its.it_value.tv_sec = freq_nanosecs / 1000000000;
-  its.it_value.tv_nsec = freq_nanosecs % 1000000000;
-  its.it_interval.tv_sec = its.it_value.tv_sec;
-  its.it_interval.tv_nsec = its.it_value.tv_nsec;
+  its.it_value.tv_sec = 0;
+  its.it_value.tv_nsec = 0;
+  its.it_interval.tv_sec = 1;
+  its.it_interval.tv_nsec = 0;
 
-  struct sigevent sev;
-  sev.sigev_notify = SIGEV_SIGNAL;
-  sev.sigev_signo = SIGKILL;
-  sev.sigev_value.sival_ptr = NULL;
+  struct sigevent dummy_sev;
 
   timer_t timerid;
 
-  if (timer_create(CLOCK_REALTIME, &sev, &timerid) == -1) {
+  if (timer_create(CLOCK_REALTIME, &dummy_sev, &timerid) == -1) {
     perror("timer_create");
     exit(1);
   }
