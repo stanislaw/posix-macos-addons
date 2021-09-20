@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define TIMERS_MAX 100U
-
 typedef enum {
   STOPPED = 0,
   STARTED = 1
