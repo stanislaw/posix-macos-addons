@@ -1,6 +1,7 @@
 name: Tests on macOS
 
 on:
+  push:
   pull_request:
 
 jobs:
@@ -14,7 +15,7 @@ jobs:
 
       - name: "Create CMake build tree"
         run: |
-          mkdir -p build && cd build && cmake ..
+          mkdir -p build && cd build && cmake -DENABLE_ASAN=True ..
 
       - name: "Run tests"
         run: |
