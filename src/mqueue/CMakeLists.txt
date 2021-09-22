@@ -13,5 +13,8 @@ set(SOURCES
 )
 
 add_library(mqueue ${SOURCES})
-target_include_directories(mqueue PUBLIC include include/mqueue)
+target_include_directories(mqueue PUBLIC include/mqueue)
 target_link_libraries(mqueue rt)
+
+install(TARGETS mqueue)
+install(FILES include/mqueue/mqueue.h TYPE INCLUDE)
