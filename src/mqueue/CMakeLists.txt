@@ -12,7 +12,7 @@ set(SOURCES
   src/mq_unlink.c
 )
 
-add_library(mqueue ${SOURCES})
+add_library(mqueue STATIC ${SOURCES})
 target_include_directories(mqueue PUBLIC include/mqueue)
 target_link_libraries(mqueue rt)
 
