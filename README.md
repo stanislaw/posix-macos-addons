@@ -4,6 +4,8 @@ This is a collection of the POSIX functions which are not available on macOS.
 
 The status of the code: hacky, experimental.
 
+![](https://github.com/stanislaw/posix-macos-addons/workflows/Tests%20on%20macOS/badge.svg?branch=main)
+
 ## Table of Contents
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->

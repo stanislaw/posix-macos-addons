@@ -1,0 +1,21 @@
+name: Tests on macOS
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    name: Test job
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: "Create CMake build tree"
+        run: |
+          mkdir -p build && cd build && cmake ..
+
+      - name: "Run tests"
+        run: |
+          cd build && make tests-unit && ./tests/tests-unit
