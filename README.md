@@ -150,11 +150,6 @@ following projects:
 
 - [DLR-RY/OUTPOST](https://github.com/DLR-RY/outpost-core)
 
-## Not implemented yet
-
-- `pthread_mutex_timedlock`,
-  [starting point](https://ponymail-vm.apache.org/_GUI_/thread.html/74ee9ce08237f9c26f8be10a1c1015ab058bb923f528f921c52497ad@%3Cdev.apr.apache.org%3E).
-
 ## Similar repositories
 
 - [libUnixToOSX](https://github.com/cooljeanius/libUnixToOSX)
