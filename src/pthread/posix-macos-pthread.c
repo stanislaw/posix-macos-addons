@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <errno.h>
 
+#include <posix-macos-time.h>
+
 int pthread_setschedprio(pthread_t thread, int prio) {
   struct sched_param param;
   int current_policy;

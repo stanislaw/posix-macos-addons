@@ -5,6 +5,8 @@
 #include <time.h>
 #include <dispatch/dispatch.h>
 
+#include <posix-macos-time.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

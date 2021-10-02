@@ -2,7 +2,30 @@
 
 #include <assert.h>
 #include <errno.h>
+
 #include <mach/clock_types.h>
+
+#if __MAC_OS_X_VERSION_MAX_ALLOWED < 101200
+
+#include <kern/clock.h>
+
+// See: https://developer.apple.com/library/archive/documentation/Darwin/Conceptual/KernelProgramming/services/services.html
+int clock_gettime(clockid_t __clock_id, struct timespec *__tp) {
+  switch (__clock_id) {
+    case CLOCK_REALTIME:
+      clock_get_calendar_nanotime((clock_sec_t *) &__tp->tv_sec, (clock_nsec_t *) &__tp->tv_nsec);
+      return 0;
+
+    case CLOCK_MONOTONIC:
+      clock_get_system_nanotime((clock_sec_t *) &__tp->tv_sec, (clock_nsec_t *) &__tp->tv_nsec);
+      return 0;
+
+    default:
+      return -1;
+  }
+}
+
+#endif
 
 void __timespec_diff(const struct timespec* lhs,
                      const struct timespec* rhs,
