@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 ssize_t mq_receive(mqd_t mqd, char *ptr, size_t maxlen, unsigned int *priop) {
   int n;

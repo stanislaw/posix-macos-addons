@@ -4,6 +4,8 @@
 #include <errno.h>
 #include <time.h>
 
+#include <posix-macos-time.h>
+
 static void timespec_diff(const struct timespec *lhs,
                           const struct timespec *rhs,
                           struct timespec *out) {

@@ -7,6 +7,17 @@
 extern "C" {
 #endif
 
+#if __MAC_OS_X_VERSION_MAX_ALLOWED < 101200
+typedef enum
+{
+    CLOCK_REALTIME,
+    CLOCK_MONOTONIC
+} clockid_t;
+
+int clock_gettime(clockid_t __clock_id, struct timespec *__tp);
+
+#endif
+
 #ifndef TIMER_ABSTIME
 /// We are not using this variable, so the value does not matter.
 #define TIMER_ABSTIME 12345
