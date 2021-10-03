@@ -1,7 +1,7 @@
 #ifndef _POSIX_MACOS_SEMAPHORE_H_
 #define _POSIX_MACOS_SEMAPHORE_H_
 
-#include <pthread/pthread.h>
+#include <pthread.h>
 #include <semaphore.h>
 
 #ifdef __cplusplus

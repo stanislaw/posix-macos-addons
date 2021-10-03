@@ -1,5 +1,7 @@
 #include "mqueue.h"
 
+#include "posix-macos-time.h"
+
 #include <gtest/gtest.h>
 
 #include <iostream>

@@ -28,11 +28,18 @@ int timer_create(clockid_t clockid, struct sigevent *sevp, timer_t *timerid) {
 
   dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 
+  // Create a high priority serial dispatch queue with GCD
+  // https://stackoverflow.com/questions/17690740/create-a-high-priority-serial-dispatch-queue-with-gcd/17690878#17690878
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
   // Configure the timer queue to have the highest priority.
   dispatch_queue_attr_t priorityAttribute = dispatch_queue_attr_make_with_qos_class(
-  DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, -1
+    DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INTERACTIVE, -1
   );
   dispatch_queue_t queue = dispatch_queue_create("timerQueue", priorityAttribute);
+#else
+  dispatch_queue_t queue = dispatch_queue_create("timerQueue", NULL);
+  dispatch_set_target_queue(queue, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0));
+#endif
 
   dispatch_source_t new_timer =
     dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
