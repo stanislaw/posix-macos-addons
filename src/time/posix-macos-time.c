@@ -7,22 +7,20 @@
 
 #if __MAC_OS_X_VERSION_MAX_ALLOWED < 101200
 
-#include <kern/clock.h>
+#include <mach/clock.h>
+#include <mach/mach.h>
 
-// See: https://developer.apple.com/library/archive/documentation/Darwin/Conceptual/KernelProgramming/services/services.html
-int clock_gettime(clockid_t __clock_id, struct timespec *__tp) {
-  switch (__clock_id) {
-    case CLOCK_REALTIME:
-      clock_get_calendar_nanotime((clock_sec_t *) &__tp->tv_sec, (clock_nsec_t *) &__tp->tv_nsec);
-      return 0;
-
-    case CLOCK_MONOTONIC:
-      clock_get_system_nanotime((clock_sec_t *) &__tp->tv_sec, (clock_nsec_t *) &__tp->tv_nsec);
-      return 0;
-
-    default:
-      return -1;
-  }
+// TODO: Find if there is a better solution.
+// https://stackoverflow.com/questions/5167269/clock-gettime-alternative-in-mac-os-x
+int clock_gettime(clockid_t __clock_id, struct timespec *ts) {
+  clock_serv_t cclock;
+  mach_timespec_t mts;
+  host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
+  clock_get_time(cclock, &mts);
+  mach_port_deallocate(mach_task_self(), cclock);
+  ts->tv_sec = mts.tv_sec;
+  ts->tv_nsec = mts.tv_nsec;
+  return 0;
 }
 
 #endif
