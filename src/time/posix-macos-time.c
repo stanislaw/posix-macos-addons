@@ -3,24 +3,77 @@
 #include <assert.h>
 #include <errno.h>
 
+
+#include <stdatomic.h>
+#include <sys/sysctl.h>
+
+#include <mach/mach_time.h>
 #include <mach/clock_types.h>
 
+// _clock_gettime_impl, _boottime_fallback_usec and _mach_boottime_usec
+// are based on https://opensource.apple.com/source/Libc/Libc-1439.141.1/gen/clock_gettime.c.auto.html
+static uint64_t
+_boottime_fallback_usec(void)
+{
+    struct timeval tv;
+    size_t len = sizeof(tv);
+    int ret = sysctlbyname("kern.boottime", &tv, &len, NULL, 0);
+    if (ret == -1) return 0;
+    return (uint64_t)tv.tv_sec * USEC_PER_SEC + (uint64_t)tv.tv_usec;
+}
+
+static int
+_mach_boottime_usec(uint64_t *boottime, struct timeval *realtime)
+{
+    uint64_t bt1 = 0, bt2 = 0;
+    int ret;
+    do {
+        bt1 = _boottime_fallback_usec();
+
+        atomic_thread_fence(memory_order_seq_cst);
+
+        ret = gettimeofday(realtime, NULL);
+        if (ret != 0) return ret;
+
+        atomic_thread_fence(memory_order_seq_cst);
+
+        bt2 = _boottime_fallback_usec();
+    } while (bt1 != bt2);
+    *boottime = bt1;
+    return 0;
+}
+
+
+int _clock_gettime_impl(clockid_t clk_id, struct timespec *tp)
+{
+    switch(clk_id){
+    case CLOCK_REALTIME: {
+        struct timeval tv;
+        int ret = gettimeofday(&tv, NULL);
+        TIMEVAL_TO_TIMESPEC(&tv, tp);
+        return ret;
+    }
+    case CLOCK_MONOTONIC: {
+        struct timeval tv;
+        uint64_t boottime_usec;
+        int ret = _mach_boottime_usec(&boottime_usec, &tv);
+        struct timeval boottime = {
+            .tv_sec = boottime_usec / USEC_PER_SEC,
+            .tv_usec = boottime_usec % USEC_PER_SEC
+        };
+        timersub(&tv, &boottime, &tv);
+        TIMEVAL_TO_TIMESPEC(&tv, tp);
+        return ret;
+    }
+    default:
+        errno = EINVAL;
+        return -1;
+    }
+}
+
 #if __MAC_OS_X_VERSION_MAX_ALLOWED < 101200
-
-#include <mach/clock.h>
-#include <mach/mach.h>
-
-// TODO: Find if there is a better solution.
-// https://stackoverflow.com/questions/5167269/clock-gettime-alternative-in-mac-os-x
-int clock_gettime(clockid_t __clock_id, struct timespec *ts) {
-  clock_serv_t cclock;
-  mach_timespec_t mts;
-  host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);
-  clock_get_time(cclock, &mts);
-  mach_port_deallocate(mach_task_self(), cclock);
-  ts->tv_sec = mts.tv_sec;
-  ts->tv_nsec = mts.tv_nsec;
-  return 0;
+int clock_gettime(clockid_t clk_id, struct timespec *tp) {
+  return _clock_gettime_impl(clk_id, tp);
 }
 
 #endif
