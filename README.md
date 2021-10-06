@@ -156,6 +156,7 @@ following projects:
 - https://github.com/ChisholmKyle/PosixMachTiming
 - https://stackoverflow.com/questions/5167269/clock-gettime-alternative-in-mac-os-x
 - https://speakerdeck.com/jj1bdx/how-i-discover-a-working-implementation-of-clock-nanosleep-for-macos-in-cpan-time-hires?slide=8
+- [macports-legacy-support](https://github.com/macports/macports-legacy-support)
 
 These are similar repositories. We haven't checked these implementations yet,
 there might be better implementations hiding.
